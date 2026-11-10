@@ -197,9 +197,9 @@ uv run arq app.worker.WorkerSettings
 **新开一个终端**：
 
 ```bash
-cd frontend
-npm install                           # 国内可加 --registry=https://registry.npmmirror.com
-npm run dev
+cd client
+pnpm install --frozen-lockfile         # 国内可加 --registry=https://registry.npmmirror.com
+pnpm run dev
 ```
 
 浏览器打开 [http://localhost:7301](http://localhost:7301) 即可使用。
