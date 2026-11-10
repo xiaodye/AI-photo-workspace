@@ -1,20 +1,28 @@
 <div align="center">
 
-# AI 修图智能体
+# AI 修图工作台
 
 **一句话驱动的 AI 修图工作台：Agent 自动规划修图步骤，调度 20+ 编辑工具完成专业级修图。**
 
 自然语言修图 · SAM 区域选择 · 图层拆分 · AI 文生图 · 局部编辑
 
-[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat&logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)](https://redis.io)
-[![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat)](https://www.langchain.com/langgraph)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
 [![Konva](https://img.shields.io/badge/Konva-Canvas-F26101?style=flat&logo=konva&logoColor=white)](https://konvajs.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=flat&logo=reactquery&logoColor=white)](https://tanstack.com/query)
+[![Zustand](https://img.shields.io/badge/Zustand-1C1C1C?style=flat)](https://zustand.docs.pmnd.rs)
+[![pnpm](https://img.shields.io/badge/pnpm-F69220?style=flat&logo=pnpm&logoColor=white)](https://pnpm.io)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vite.dev)
+
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=flat)](https://www.langchain.com/langgraph)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat&logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)](https://redis.io)
+[![MinIO](https://img.shields.io/badge/MinIO-C72E49?style=flat&logo=minio&logoColor=white)](https://min.io)
+[![uv](https://img.shields.io/badge/uv-DE5FE9?style=flat)](https://docs.astral.sh/uv/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com)
 
 </div>
@@ -25,15 +33,15 @@
 
 ## ✨ 特性
 
-| 能力 | 说明 |
-| ------------ | ------------------------------------------------------------ |
-| 🤖 自然语言修图 | 「把背景换成海滩」，Agent 规划步骤后逐步调用工具，UI 与 Agent 共用同一套工具注册表 |
-| 🗺️ 多步计划 | 复杂需求生成结构化 JSON 计划，服务端校验参数、补全依赖、环检测，按拓扑排序执行，支持确认 / 单步重试 / 取消后续 |
-| 🎨 画布编辑器 | react-konva 实现：缩放平移、图层文档、撤销重做、前后对比滑杆 |
-| 🎯 智能选区 | SAM 点选 + 笔刷涂抹，首次点击缓存 embedding，后续点选毫秒级响应；支持局部消除与局部替换（AI Inpainting） |
-| 🧩 图层拆分 | 一键拆分主体 / 背景 / OCR 文字层，各层独立缩放、调色、移动，JSONB 持久化 |
-| 🖼️ AI 文生图 | 提示词生成四宫格候选图，SSE 实时进度，选中即进编辑器 |
-| 📦 批量处理 | ARQ 异步队列 + 批量像素处理，进度推送、打包下载 |
+| 能力            | 说明                                                                                                           |
+| --------------- | -------------------------------------------------------------------------------------------------------------- |
+| 🤖 自然语言修图 | 「把背景换成海滩」，Agent 规划步骤后逐步调用工具，UI 与 Agent 共用同一套工具注册表                             |
+| 🗺️ 多步计划     | 复杂需求生成结构化 JSON 计划，服务端校验参数、补全依赖、环检测，按拓扑排序执行，支持确认 / 单步重试 / 取消后续 |
+| 🎨 画布编辑器   | react-konva 实现：缩放平移、图层文档、撤销重做、前后对比滑杆                                                   |
+| 🎯 智能选区     | SAM 点选 + 笔刷涂抹，首次点击缓存 embedding，后续点选毫秒级响应；支持局部消除与局部替换（AI Inpainting）       |
+| 🧩 图层拆分     | 一键拆分主体 / 背景 / OCR 文字层，各层独立缩放、调色、移动，JSONB 持久化                                       |
+| 🖼️ AI 文生图    | 提示词生成四宫格候选图，SSE 实时进度，选中即进编辑器                                                           |
+| 📦 批量处理     | ARQ 异步队列 + 批量像素处理，进度推送、打包下载                                                                |
 
 ## 🖼️ 功能预览
 
@@ -132,14 +140,14 @@ docker compose --profile deploy up -d
 
 核心配置在 `.env`：
 
-| 变量 | 说明 |
-| ---- | ---- |
-| `IMAGE_PROVIDER` | `mock` 使用本地占位图（零费用）；`dashscope` 接入真实模型，需填 `DASHSCOPE_API_KEY` |
-| `TEXT_TO_IMAGE_MODEL` / `IMAGE_EDIT_MODEL` / `PLANNER_MODEL` | 生图、编辑、规划模型名，按业务空间调整 |
-| `MATTING_PROVIDER` | 抠图服务：`auto` 优先 rembg，`corner` 仅四角抠图 |
-| `OCR_PROVIDER` | `auto` 检测到 RapidOCR 时拆出文字层，`none` 跳过 |
-| `DATABASE_URL` / `REDIS_URL` / `S3_*` | PostgreSQL、Redis、MinIO 连接配置 |
-| `JWT_SECRET` / `JWT_TTL_HOURS` | 登录态签名密钥与有效期，生产环境必须替换随机值 |
+| 变量                                                         | 说明                                                                                |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `IMAGE_PROVIDER`                                             | `mock` 使用本地占位图（零费用）；`dashscope` 接入真实模型，需填 `DASHSCOPE_API_KEY` |
+| `TEXT_TO_IMAGE_MODEL` / `IMAGE_EDIT_MODEL` / `PLANNER_MODEL` | 生图、编辑、规划模型名，按业务空间调整                                              |
+| `MATTING_PROVIDER`                                           | 抠图服务：`auto` 优先 rembg，`corner` 仅四角抠图                                    |
+| `OCR_PROVIDER`                                               | `auto` 检测到 RapidOCR 时拆出文字层，`none` 跳过                                    |
+| `DATABASE_URL` / `REDIS_URL` / `S3_*`                        | PostgreSQL、Redis、MinIO 连接配置                                                   |
+| `JWT_SECRET` / `JWT_TTL_HOURS`                               | 登录态签名密钥与有效期，生产环境必须替换随机值                                      |
 
 ## 🗂️ 项目结构
 
