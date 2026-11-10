@@ -1,3 +1,8 @@
 {
-  "cSpell.words": ["dashscope", "Inpainting", "Konva", "qwen", "rapidocr", "rembg", "venv", "Vite"]
+  "cSpell.words": ["dashscope", "Inpainting", "Konva", "qwen", "rapidocr", "rembg", "venv", "Vite"],
+  "oxc.enable.oxfmt": true,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.formatOnSave": true
+  }
 }
