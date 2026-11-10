@@ -49,7 +49,7 @@ class Settings(BaseSettings):
 
     @property
     def frontend_dist(self) -> Path:
-        return ROOT_DIR / "frontend" / "dist"
+        return ROOT_DIR / "client" / "dist"
 
 
 @lru_cache
