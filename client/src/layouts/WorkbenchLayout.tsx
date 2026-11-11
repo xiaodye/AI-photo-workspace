@@ -1,7 +1,9 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import BrandMark from '@/components/BrandMark'
 import ToastHost from '@/components/ToastHost'
+import AccountMenu from '@/components/AccountMenu'
 import { useAuthActions, useCurrentUser } from '@/hooks/useAuth'
 
 const NAV_ITEMS = [
@@ -24,6 +26,7 @@ export default function WorkbenchLayout() {
   const navigate = useNavigate()
   const { user } = useCurrentUser()
   const { logout } = useAuthActions()
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
 
   /**
    * 退出当前登录状态并交由认证路由处理后续访问。
@@ -34,12 +37,17 @@ export default function WorkbenchLayout() {
   return (
     <div className="flex h-screen overflow-hidden">
       <nav className="relative z-30 w-16 shrink-0" aria-label="工作台">
-        <div className="group border-line bg-paper absolute inset-y-0 left-0 flex w-16 flex-col overflow-hidden border-r py-4 transition-[width,box-shadow] duration-200 hover:w-52 hover:shadow-panel">
-          <BrandMark size="sm" className="mb-6 px-5">
-            <span className="text-ink truncate text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100">
-              AI 修图智能体
-            </span>
-          </BrandMark>
+        <div
+          data-account-open={accountMenuOpen}
+          className="group border-line bg-paper absolute inset-y-0 left-0 flex w-16 flex-col overflow-hidden border-r py-4 transition-[width,box-shadow] duration-200 hover:w-52 hover:shadow-panel data-[account-open=true]:w-52 data-[account-open=true]:shadow-panel data-[account-open=true]:transition-none"
+        >
+          <Link to="/" aria-label="返回落地页" title="返回落地页" className="mb-6 block px-5">
+            <BrandMark size="sm">
+              <span className="text-ink truncate text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
+                AI 修图智能体
+              </span>
+            </BrandMark>
+          </Link>
 
           <ul className="flex flex-1 flex-col gap-1 px-2">
             {NAV_ITEMS.map((item) => (
@@ -56,7 +64,7 @@ export default function WorkbenchLayout() {
                   }
                 >
                   <NavIcon path={item.icon} />
-                  <span className="truncate opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="truncate opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
                     {item.label}
                   </span>
                 </NavLink>
@@ -65,19 +73,13 @@ export default function WorkbenchLayout() {
           </ul>
 
           <div className="border-line mt-2 border-t px-2 pt-3">
-            <button
-              type="button"
-              onClick={signOut}
-              title={user ? `${user.username} · 退出登录` : '退出登录'}
-              className="text-muted hover:bg-soft hover:text-ink flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm transition-colors"
-            >
-              <span className="bg-brand-soft text-brand-strong grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-semibold">
-                {user?.username.slice(0, 1).toUpperCase() ?? '?'}
-              </span>
-              <span className="truncate opacity-0 transition-opacity group-hover:opacity-100">
-                退出登录
-              </span>
-            </button>
+            <AccountMenu
+              username={user?.username}
+              onSignOut={signOut}
+              isSigningOut={logout.isPending}
+              isOpen={accountMenuOpen}
+              onOpenChange={setAccountMenuOpen}
+            />
           </div>
         </div>
       </nav>

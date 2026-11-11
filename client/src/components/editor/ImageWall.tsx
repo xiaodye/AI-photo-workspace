@@ -56,7 +56,7 @@ export default function ImageWall({
                 loading="lazy"
                 className="size-full object-contain transition-transform duration-150 group-hover:scale-[1.03]"
               />
-              <span className="bg-ink/70 absolute right-0 bottom-0 left-0 py-0.5 text-[10px] text-white">
+              <span className="bg-scrim/70 absolute right-0 bottom-0 left-0 py-0.5 text-[10px] text-white">
                 {KIND_LABELS[asset.kind]}
               </span>
             </button>

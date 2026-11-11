@@ -1,3 +1,4 @@
+import { Checkbox } from '@heroui/react'
 import { useEffect, useState } from 'react'
 
 import type { Asset } from '@/api/assets'
@@ -91,15 +92,19 @@ export default function LayerPanel({
       )}
 
       <Section title="图层">
-        <label className="text-muted mb-2 flex items-center gap-1.5 text-[11px]">
-          <input
-            type="checkbox"
-            checked={includeText}
-            disabled={tools.busy}
-            onChange={(event) => setIncludeText(event.target.checked)}
-          />
-          同时拆出文字
-        </label>
+        <Checkbox
+          isSelected={includeText}
+          isDisabled={tools.busy}
+          onChange={setIncludeText}
+          className="mb-2"
+        >
+          <Checkbox.Content className="text-muted gap-1.5 text-[11px] font-normal">
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            同时拆出文字
+          </Checkbox.Content>
+        </Checkbox>
         <div className="mb-2.5 flex gap-1">
           <Button
             variant="outline"

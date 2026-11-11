@@ -8,6 +8,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
+[![HeroUI](https://img.shields.io/badge/HeroUI-000000?style=flat&logo=heroui&logoColor=white)](https://www.heroui.com)
 [![Konva](https://img.shields.io/badge/Konva-Canvas-F26101?style=flat&logo=konva&logoColor=white)](https://konvajs.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=flat&logo=reactquery&logoColor=white)](https://tanstack.com/query)
@@ -152,25 +153,46 @@ docker compose --profile deploy up -d
 ## 🗂️ 项目结构
 
 ```text
-backend/app/
-  agent/       LangGraph Agent：规划、图编排、LLM 接入
-  edits/       图像编辑管线：抠图、OCR、分割、渲染、像素处理
-  tools/       统一工具注册表（UI 与 Agent 共用）
-  providers/   模型抽象层：Mock / DashScope 可切换
-  routers/     REST API：认证、会话、资产、批次、事件
-  worker.py    ARQ 异步任务 Worker
-  eval/        评测脚本与数据集
+backend/
+├── app/             后端应用代码
+│   ├── routers/     HTTP 接口路由
+│   ├── schemas/     请求和响应的数据结构
+│   ├── services/    业务逻辑
+│   ├── models/      数据库模型
+│   ├── tools/       编辑工具的参数、注册和执行实现
+│   ├── edits/       图层、像素、遮罩等底层处理
+│   ├── agent/       自然语言指令转工具计划
+│   ├── providers/   外部 AI 图像服务的适配
+│   ├── tasks/       worker 可以执行的队列任务
+│   └── eval/        图像处理效果评测
+├── migrations/      数据库结构变更记录
+├── tests/           自动化测试
+├── scripts/         独立验证脚本
+├── pyproject.toml   项目依赖和工具配置
+├── uv.lock          锁定依赖版本
+└── alembic.ini      数据库迁移工具配置
 
-client/src/
-  pages/       落地页、登录、创作（文生图）、候选图、编辑器、批量处理
-  components/
-    editor/    画布舞台、编辑工具栏、Agent 对话框、图层面板、
-               选区覆盖层、图片墙、会话侧边栏
-    landing/   落地页展示组件
-  hooks/       画布视口、选区笔刷、运行进度平滑、批量任务等业务 Hook
-  stores/      Zustand 状态：画布视口、编辑器 UI、全局提示
-  lib/         图层 / 选区 / 笔刷 / 调色预览等纯逻辑工具
-  api/         按模块划分的接口层（认证、会话、资产、Agent、批次）
+client/
+├── public/             静态资源
+├── src/
+│   ├── api/            后端接口调用和接口类型
+│   ├── pages/          路由对应的完整页面
+│   ├── layouts/        页面公共外壳、登录访问控制
+│   ├── components/     UI 组件
+│   │   ├── editor/     编辑器专用组件
+│   │   ├── landing/    首页专用组件
+│   │   └── ui/         通用基础组件
+│   ├── hooks/          可复用的 React 业务和交互逻辑
+│   ├── stores/         跨组件共享的客户端状态
+│   ├── lib/            工具函数、计算逻辑和业务常量
+│   ├── main.tsx        应用启动入口
+│   ├── App.tsx         页面路由配置
+│   └── index.css       全局样式
+├── index.html          HTML 入口
+├── package.json        依赖和执行命令
+├── pnpm-lock.yaml      依赖锁文件
+├── vite.config.ts      开发和构建配置
+└── tsconfig*.json      TypeScript 配置
 
 docker-compose.yml   基础设施 + deploy profile
 Dockerfile           多阶段构建：前端构建 → 后端同源托管

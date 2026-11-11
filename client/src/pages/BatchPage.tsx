@@ -1,3 +1,4 @@
+import { Checkbox, Input } from '@heroui/react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -91,7 +92,7 @@ function Compose() {
                 <button
                   type="button"
                   onClick={() => setAssets((current) => current.filter((item) => item.id !== asset.id))}
-                  className="bg-ink/70 absolute -top-1 -right-1 grid size-5 place-items-center rounded-full text-[10px] text-white"
+                  className="bg-scrim/70 absolute -top-1 -right-1 grid size-5 place-items-center rounded-full text-[10px] text-white"
                   aria-label="移除"
                 >
                   ×
@@ -127,7 +128,7 @@ function Compose() {
           type="button"
           disabled={Boolean(blocked) || create.isPending}
           onClick={start}
-          className="bg-ink hover:bg-dark rounded-control px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+          className="bg-action hover:bg-action-hover rounded-control px-4 py-2 text-sm font-medium text-action-foreground disabled:opacity-40"
         >
           {create.isPending ? '提交中…' : '开始处理'}
         </button>
@@ -221,7 +222,7 @@ function Watch({ runId }: { runId: string }) {
             type="button"
             disabled={!done || succeeded === 0 || pack.isPending}
             onClick={download}
-            className="bg-ink hover:bg-dark rounded-control px-3.5 py-2 text-xs font-medium text-white disabled:opacity-40"
+            className="bg-action hover:bg-action-hover rounded-control px-3.5 py-2 text-xs font-medium text-action-foreground disabled:opacity-40"
           >
             {pack.isPending ? '打包中…' : '打包下载'}
           </button>
@@ -318,20 +319,19 @@ function Pipeline({
           const on = draft.selected.includes(step.id)
           return (
             <li key={step.id} className="border-line bg-paper rounded-[16px] border p-4">
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={on}
-                  onChange={() => toggle(step.id)}
-                  className="mt-0.5"
-                />
-                <span>
-                  <span className="text-ink block text-sm font-medium">{step.label}</span>
-                  <span className="text-faint block text-xs">{step.hint}</span>
-                </span>
-              </label>
+              <Checkbox isSelected={on} onChange={() => toggle(step.id)}>
+                <Checkbox.Content className="items-start gap-3">
+                  <Checkbox.Control className="mt-0.5">
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <span>
+                    <span className="text-ink block text-sm font-medium">{step.label}</span>
+                    <span className="text-faint block text-xs font-normal">{step.hint}</span>
+                  </span>
+                </Checkbox.Content>
+              </Checkbox>
               {on && step.id === 'replace_background' && (
-                <input
+                <Input
                   value={draft.prompt}
                   onChange={(event) => onChange({ ...draft, prompt: event.target.value })}
                   placeholder="例如：浅木色桌面，晨光"
@@ -365,7 +365,7 @@ function Pipeline({
                       type="button"
                       onClick={() => onChange({ ...draft, scale })}
                       className={`rounded-control px-3 py-1.5 text-xs ${
-                        draft.scale === scale ? 'bg-ink text-white' : 'border-line text-muted border'
+                        draft.scale === scale ? 'bg-action text-action-foreground' : 'border-line text-muted border'
                       }`}
                     >
                       {scale} 倍
@@ -382,7 +382,7 @@ function Pipeline({
                       onClick={() => onChange({ ...draft, expandRatio: ratio })}
                       className={`rounded-control px-3 py-1.5 text-xs ${
                         draft.expandRatio === ratio
-                          ? 'bg-ink text-white'
+                          ? 'bg-action text-action-foreground'
                           : 'border-line text-muted border'
                       }`}
                     >
@@ -400,7 +400,7 @@ function Pipeline({
                       onClick={() => toggleDelivery(ratio)}
                       className={`rounded-control px-3 py-1.5 text-xs ${
                         draft.delivery.includes(ratio)
-                          ? 'bg-ink text-white'
+                          ? 'bg-action text-action-foreground'
                           : 'border-line text-muted border'
                       }`}
                     >
@@ -417,14 +417,18 @@ function Pipeline({
       <div className="mt-4 flex items-center gap-3">
         <span className="text-muted text-xs">导出格式</span>
         {(['png', 'jpg'] as const).map((fmt) => (
-          <label key={fmt} className="text-ink flex items-center gap-1.5 text-xs">
-            <input
-              type="checkbox"
-              checked={draft.formats.includes(fmt)}
-              onChange={() => toggleFormat(fmt)}
-            />
-            {fmt.toUpperCase()}
-          </label>
+          <Checkbox
+            key={fmt}
+            isSelected={draft.formats.includes(fmt)}
+            onChange={() => toggleFormat(fmt)}
+          >
+            <Checkbox.Content className="text-ink gap-1.5 text-xs font-normal">
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              {fmt.toUpperCase()}
+            </Checkbox.Content>
+          </Checkbox>
         ))}
       </div>
     </section>

@@ -1,7 +1,9 @@
+import { Button, Input } from '@heroui/react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 
 import BrandMark from '@/components/BrandMark'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { errorMessage, useAuthActions, useCurrentUser } from '@/hooks/useAuth'
 
 type Mode = 'login' | 'register'
@@ -66,6 +68,7 @@ export default function AuthPage() {
 
   return (
     <div className="relative isolate flex min-h-screen items-center justify-center px-6 py-12">
+      <div className="absolute top-5 right-5 z-10"><ThemeSwitcher /></div>
       <div className="bg-glow absolute inset-x-0 top-0 h-[420px]" aria-hidden />
 
       <div className="relative w-full max-w-sm">
@@ -101,22 +104,23 @@ export default function AuthPage() {
 
             {action.isError && <p className="text-danger text-sm">{errorMessage(action.error)}</p>}
 
-            <button
+            <Button
               type="submit"
-              disabled={action.isPending}
-              className="bg-ink hover:bg-dark rounded-control w-full py-2.5 text-sm font-medium text-white transition-colors disabled:opacity-50"
+              isDisabled={action.isPending}
+              className="app-button bg-action hover:bg-action-hover rounded-control w-full py-2.5 text-sm font-medium text-action-foreground transition-colors disabled:opacity-50"
             >
               {action.isPending ? '处理中…' : copy.submit}
-            </button>
+            </Button>
           </form>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={switchMode}
-            className="text-muted hover:text-brand-strong mt-5 text-sm transition-colors"
+            className="app-button text-muted hover:text-brand-strong mt-5 p-0 text-sm transition-colors"
           >
             {copy.switchHint}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -143,7 +147,7 @@ function Field({
   return (
     <label className="block">
       <span className="text-muted mb-1.5 block text-sm">{label}</span>
-      <input
+      <Input
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}

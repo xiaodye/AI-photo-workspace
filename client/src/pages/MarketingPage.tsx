@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react'
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -182,7 +183,7 @@ function Workspace({ sessionId }: { sessionId: string }) {
           title="四类营销图"
           hint="以当前画布为参考生成，结果进图片墙，不改画布。"
         />
-        <input
+        <Input
           value={copy}
           onChange={(event) => setCopy(event.target.value)}
           disabled={tools.busy}
@@ -218,7 +219,7 @@ function Workspace({ sessionId }: { sessionId: string }) {
             type="button"
             disabled={tools.busy}
             onClick={() => tools.invoke('prepare_delivery_sizes')}
-            className="bg-ink hover:bg-dark rounded-control px-3.5 py-2 text-xs font-medium text-white disabled:opacity-40"
+            className="bg-action hover:bg-action-hover rounded-control px-3.5 py-2 text-xs font-medium text-action-foreground disabled:opacity-40"
           >
             {deliveryRunning() ? '生成中…' : '生成 1:1 / 4:5 / 9:16'}
           </button>
@@ -383,7 +384,7 @@ function PackList({
             type="button"
             disabled={disabled || selected.length === 0}
             onClick={onDownload}
-            className="bg-ink hover:bg-dark rounded-control px-3.5 py-2 text-xs font-medium text-white disabled:opacity-40"
+            className="bg-action hover:bg-action-hover rounded-control px-3.5 py-2 text-xs font-medium text-action-foreground disabled:opacity-40"
           >
             {packing ? '处理中…' : `打包 ${selected.length} 张`}
           </button>
@@ -414,13 +415,13 @@ function PackList({
                       className={`absolute top-2 left-2 grid size-6 place-items-center rounded-full border-2 ${
                         active
                           ? 'border-brand bg-brand text-white'
-                          : 'border-white/90 bg-ink/35 text-white/0'
+                          : 'border-white/90 bg-scrim/35 text-white/0'
                       }`}
                       aria-hidden
                     >
                       <CheckIcon />
                     </span>
-                    <span className="bg-ink/70 absolute right-0 bottom-0 left-0 py-0.5 text-center text-[10px] text-white">
+                    <span className="bg-scrim/70 absolute right-0 bottom-0 left-0 py-0.5 text-center text-[10px] text-white">
                       {KIND_LABELS[asset.kind]} · {ratioLabel(asset.width, asset.height)}
                     </span>
                   </div>

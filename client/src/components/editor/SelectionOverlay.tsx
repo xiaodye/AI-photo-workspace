@@ -59,8 +59,8 @@ export function SelectionOverlay({
         <Line
           points={draft.flatMap((point) => [point.x * document.width, point.y * document.height])}
           closed={draft.length > 2}
-          fill={draft.length > 2 ? '#5f98ad' : undefined}
-          stroke="#5f98ad"
+          fill={draft.length > 2 ? '#64866c' : undefined}
+          stroke="#64866c"
           strokeWidth={brushWidth(document)}
           lineCap="round"
           lineJoin="round"
@@ -98,8 +98,8 @@ function MarkerBadge({
   const invert = 1 / scale
   return (
     <Group x={x} y={y} scaleX={invert} scaleY={invert} listening={false}>
-      {pending && <Circle radius={17} stroke="#5f98ad" strokeWidth={2} opacity={0.45} />}
-      <Circle radius={11} fill="#5f98ad" shadowColor="#141a14" shadowBlur={8} shadowOpacity={0.35} />
+      {pending && <Circle radius={17} stroke="#64866c" strokeWidth={2} opacity={0.45} />}
+      <Circle radius={11} fill="#64866c" shadowColor="#141a14" shadowBlur={8} shadowOpacity={0.35} />
       <Text
         text={String(index)}
         width={22}
