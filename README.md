@@ -171,16 +171,27 @@ backend/
 ├── uv.lock          锁定依赖版本
 └── alembic.ini      数据库迁移工具配置
 
-client/src/
-  pages/       落地页、登录、创作（文生图）、候选图、编辑器、批量处理
-  components/
-    editor/    画布舞台、编辑工具栏、Agent 对话框、图层面板、
-               选区覆盖层、图片墙、会话侧边栏
-    landing/   落地页展示组件
-  hooks/       画布视口、选区笔刷、运行进度平滑、批量任务等业务 Hook
-  stores/      Zustand 状态：画布视口、编辑器 UI、全局提示
-  lib/         图层 / 选区 / 笔刷 / 调色预览等纯逻辑工具
-  api/         按模块划分的接口层（认证、会话、资产、Agent、批次）
+client/
+├── public/             静态资源
+├── src/
+│   ├── api/            后端接口调用和接口类型
+│   ├── pages/          路由对应的完整页面
+│   ├── layouts/        页面公共外壳、登录访问控制
+│   ├── components/     UI 组件
+│   │   ├── editor/     编辑器专用组件
+│   │   ├── landing/    首页专用组件
+│   │   └── ui/         通用基础组件
+│   ├── hooks/          可复用的 React 业务和交互逻辑
+│   ├── stores/         跨组件共享的客户端状态
+│   ├── lib/            工具函数、计算逻辑和业务常量
+│   ├── main.tsx        应用启动入口
+│   ├── App.tsx         页面路由配置
+│   └── index.css       全局样式
+├── index.html          HTML 入口
+├── package.json        依赖和执行命令
+├── pnpm-lock.yaml      依赖锁文件
+├── vite.config.ts      开发和构建配置
+└── tsconfig*.json      TypeScript 配置
 
 docker-compose.yml   基础设施 + deploy profile
 Dockerfile           多阶段构建：前端构建 → 后端同源托管
