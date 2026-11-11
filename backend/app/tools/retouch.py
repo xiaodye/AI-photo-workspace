@@ -19,16 +19,29 @@ class RemoveBackgroundIn(LayerRef):
 
 
 class AdjustIn(LayerRef):
+    """图片明暗、色彩和细节调整参数。"""
+
+    # 亮度调整量。
     brightness: float = Field(default=0, ge=-1, le=1)
+    # 对比度调整量。
     contrast: float = Field(default=0, ge=-1, le=1)
+    # 高光区域的明暗调整量。
     highlights: float = Field(default=0, ge=-1, le=1)
+    # 阴影区域的明暗调整量。
     shadows: float = Field(default=0, ge=-1, le=1)
+    # 色温调整量，用于控制冷暖色调。
     temperature: float = Field(default=0, ge=-1, le=1)
+    # 色调调整量，用于控制绿色与洋红色偏移。
     tint: float = Field(default=0, ge=-1, le=1)
+    # 整体色彩饱和度调整量。
     saturation: float = Field(default=0, ge=-1, le=1)
+    # 自然饱和度调整量，主要增强低饱和度颜色。
     vibrance: float = Field(default=0, ge=-1, le=1)
+    # 锐度调整量。
     sharpness: float = Field(default=0, ge=-1, le=1)
+    # 清晰度调整量。
     clarity: float = Field(default=0, ge=-1, le=1)
+    # 暗角强度。
     vignette: float = Field(default=0, ge=0, le=1)
 
 

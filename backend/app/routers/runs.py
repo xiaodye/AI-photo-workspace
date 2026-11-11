@@ -28,6 +28,7 @@ async def _candidates(session: AsyncSession, run: ToolRun) -> list[AssetOut]:
 
 @router.post("/generations", status_code=status.HTTP_202_ACCEPTED)
 async def create_generation(payload: GenerateIn, user: CurrentUser, session: SessionDep) -> RunOut:
+    """提交图片生成任务。"""
     for asset_id in payload.reference_asset_ids:
         if await asset_service.get_for_user(session, user.id, asset_id) is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "参考图不存在")
@@ -38,6 +39,7 @@ async def create_generation(payload: GenerateIn, user: CurrentUser, session: Ses
 
 @router.get("/runs/{run_id}")
 async def get_run(run_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> RunOut:
+    """返回工具任务的状态与结果。"""
     try:
         run = await runs.get(session, run_id, user.id)
     except RunNotFound as exc:

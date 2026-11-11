@@ -44,6 +44,7 @@ def _unique_ratios(values: list[Ratio]) -> list[Ratio]:
 
 
 async def apply_op(data: bytes, operation: BatchOpIn) -> list[bytes]:
+    """执行单个批处理步骤并返回生成的图片。"""
     if operation.tool == "remove_background":
         return [await asyncio.to_thread(remove_background, data)]
     if operation.tool == "adjust_image":
@@ -92,6 +93,7 @@ async def _store(session: AsyncSession, user_id: uuid.UUID, images: list[bytes])
 async def process_asset(
     session: AsyncSession, user_id: uuid.UUID, source: Asset, payload: BatchIn
 ) -> list[Asset]:
+    """按处理步骤和导出格式生成单张素材的成品。"""
     data = await storage.get(source.storage_key)
     frames = [data]
     for operation in payload.operations:
@@ -114,6 +116,7 @@ def _blank_items(asset_ids: list[str]) -> list[dict]:
 
 
 async def execute(session: AsyncSession, run: ToolRun) -> dict:
+    """执行批量素材处理并记录逐项状态与产物。"""
     payload = BatchIn.model_validate(run.params)
     items = _blank_items([str(asset_id) for asset_id in payload.asset_ids])
     total = len(items)
@@ -183,6 +186,7 @@ async def list_for_user(
 
 
 async def detail(session: AsyncSession, run: ToolRun) -> BatchOut:
+    """组装批处理任务及逐项结果的接口响应。"""
     raw_items = (run.result or {}).get("items") or [
         {"source_id": str(asset_id), "status": "pending", "error": None, "output_ids": []}
         for asset_id in (run.params or {}).get("asset_ids") or []
@@ -209,6 +213,7 @@ async def detail(session: AsyncSession, run: ToolRun) -> BatchOut:
 
 
 async def pack(session: AsyncSession, run: ToolRun) -> PackedExport:
+    """将批处理产物打包为 ZIP 下载文件。"""
     if run.status is not RunStatus.SUCCEEDED:
         raise EmptyBatch
     outputs: list[Asset] = []

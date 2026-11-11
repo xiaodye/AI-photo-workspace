@@ -145,6 +145,7 @@ async def confirm(session: AsyncSession, record: EditSession, turn_id: uuid.UUID
 
 
 async def cancel(session: AsyncSession, record: EditSession, turn_id: uuid.UUID) -> AgentRun:
+    """取消本轮计划中尚未启动的步骤和排队任务。"""
     turn = await _get(session, record, turn_id)
     if turn.status.is_terminal:
         raise CannotCancel
@@ -158,6 +159,7 @@ async def cancel(session: AsyncSession, record: EditSession, turn_id: uuid.UUID)
 
 
 async def retry(session: AsyncSession, record: EditSession, turn_id: uuid.UUID) -> AgentRun:
+    """重试本轮计划中最近失败的步骤。"""
     turn = await _get(session, record, turn_id)
     steps = _copy(turn.plan)
     failed = next((step for step in reversed(steps) if step["status"] == plan_mod.FAILED), None)
@@ -202,6 +204,7 @@ async def turns_of(session: AsyncSession, record: EditSession, limit: int = 50) 
 
 
 async def _advance(session: AsyncSession, turn: AgentRun) -> AgentRun:
+    """调度就绪步骤并更新本轮计划的执行状态。"""
     steps = _copy(turn.plan)
     progressed = True
     while progressed:
@@ -271,4 +274,5 @@ def _copy(steps: list) -> list[dict]:
 
 
 def _touch(turn: AgentRun) -> None:
+    """标记计划数据变更以便保存到数据库。"""
     flag_modified(turn, "plan")

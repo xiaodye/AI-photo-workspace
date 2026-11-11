@@ -51,6 +51,7 @@ def resolve_target(document: LayerDocument, layer_id: str | None) -> Layer:
 
 
 async def layer_image(session: AsyncSession, record: EditSession, layer: Layer) -> bytes:
+    """校验图层素材归属并读取图片内容。"""
     if layer.kind is not LayerKind.IMAGE or layer.asset_id is None:
         raise ToolError("该图层没有可处理的图像")
     asset = await assets.get_for_user(session, record.user_id, layer.asset_id)
@@ -107,6 +108,7 @@ def layer_under_mask(document: LayerDocument, mask: bytes) -> Layer:
 
 
 def mask_for_layer(mask: bytes, layer: Layer, canvas: tuple[int, int]) -> bytes:
+    """将画布选区遮罩转换到图层局部坐标。"""
     luma = to_luma(mask, canvas)
     local = Image.new("L", (layer.width, layer.height), 0)
     local.paste(luma, (-int(round(layer.transform.x)), -int(round(layer.transform.y))))

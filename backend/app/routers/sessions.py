@@ -37,6 +37,7 @@ router = APIRouter(prefix="/sessions", tags=["sessions"])
 
 
 async def _asset(session: AsyncSession, user: User, asset_id: uuid.UUID) -> Asset:
+    """读取当前用户拥有的素材。"""
     asset = await asset_service.get_for_user(session, user.id, asset_id)
     if asset is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "素材不存在")
@@ -44,6 +45,7 @@ async def _asset(session: AsyncSession, user: User, asset_id: uuid.UUID) -> Asse
 
 
 async def _load(session: AsyncSession, user: User, session_id: uuid.UUID) -> EditSession:
+    """读取当前用户拥有的编辑会话。"""
     try:
         return await sessions.get_for_user(session, session_id, user.id)
     except SessionNotFound as exc:
@@ -51,6 +53,7 @@ async def _load(session: AsyncSession, user: User, session_id: uuid.UUID) -> Edi
 
 
 async def _detail(session: AsyncSession, record: EditSession) -> SessionDetailOut:
+    """组装会话画布、素材和撤销重做状态。"""
     wall = await sessions.assets_of(session, record)
     can_undo, can_redo = await sessions.undo_state(session, record)
     return SessionDetailOut.of_detail(
@@ -66,6 +69,7 @@ async def _detail(session: AsyncSession, record: EditSession) -> SessionDetailOu
 async def create_session(
     payload: SessionCreateIn, user: CurrentUser, session: SessionDep
 ) -> SessionDetailOut:
+    """根据选定素材创建编辑会话。"""
     current = await _asset(session, user, payload.current_asset_id)
     wall = [
         await _asset(session, user, asset_id)
@@ -83,6 +87,7 @@ async def list_sessions(
     session: SessionDep,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
 ) -> list[SessionOut]:
+    """返回当前用户的编辑会话列表。"""
     records = await sessions.list_for_user(session, user.id, limit)
     return [SessionOut.of(record) for record in records]
 
@@ -91,6 +96,7 @@ async def list_sessions(
 async def get_session(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> SessionDetailOut:
+    """返回指定编辑会话的详情。"""
     return await _detail(session, await _load(session, user, session_id))
 
 
@@ -98,6 +104,7 @@ async def get_session(
 async def patch_session(
     session_id: uuid.UUID, payload: SessionPatchIn, user: CurrentUser, session: SessionDep
 ) -> SessionDetailOut:
+    """更新会话标题和当前采用的素材。"""
     record = await _load(session, user, session_id)
 
     if payload.title is not None:
@@ -110,6 +117,7 @@ async def patch_session(
 
 
 async def _selection_out(session: AsyncSession, user: User, payload: dict) -> SelectionOut:
+    """将选区缓存组装为接口响应。"""
     mask = await _asset(session, user, uuid.UUID(payload["mask_asset_id"]))
     return SelectionOut(
         revision=payload["revision"],
@@ -122,6 +130,7 @@ async def _selection_out(session: AsyncSession, user: User, payload: dict) -> Se
 async def prepare_selection(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> None:
+    """预加载当前画布的选区推理特征。"""
     record = await _load(session, user, session_id)
     await selections.prepare(session, record)
 
@@ -130,6 +139,7 @@ async def prepare_selection(
 async def create_selection(
     session_id: uuid.UUID, payload: SelectIn, user: CurrentUser, session: SessionDep
 ) -> SelectionOut:
+    """根据点选或笔刷轨迹创建选区。"""
     record = await _load(session, user, session_id)
     try:
         if payload.points:
@@ -161,6 +171,7 @@ async def create_selection(
 async def get_selection(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> SelectionOut | None:
+    """返回当前画布版本的选区。"""
     record = await _load(session, user, session_id)
     stored = await selections.get(record.id, record.revision)
     if stored is None:
@@ -172,6 +183,7 @@ async def get_selection(
 async def delete_selection(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> None:
+    """清除会话的当前选区。"""
     record = await _load(session, user, session_id)
     await selections.clear(record.id)
 
@@ -180,6 +192,7 @@ async def delete_selection(
 async def invoke_tool(
     session_id: uuid.UUID, payload: ToolInvokeIn, user: CurrentUser, session: SessionDep
 ) -> ToolInvokeOut:
+    """提交编辑工具任务并返回最新会话。"""
     record = await _load(session, user, session_id)
     try:
         run = await tools.submit(session, user.id, payload.tool, payload.params, record.id)
@@ -195,6 +208,7 @@ async def invoke_tool(
 async def undo_session(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> SessionDetailOut:
+    """撤销会话的上一次编辑。"""
     record = await _load(session, user, session_id)
     try:
         record = await sessions.undo(session, record)
@@ -207,6 +221,7 @@ async def undo_session(
 async def redo_session(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> SessionDetailOut:
+    """重做会话的下一条编辑。"""
     record = await _load(session, user, session_id)
     try:
         record = await sessions.redo(session, record)
@@ -219,6 +234,7 @@ async def redo_session(
 async def get_history(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> list[HistoryOut]:
+    """返回会话的编辑历史。"""
     record = await _load(session, user, session_id)
     entries = await sessions.history_of(session, record)
     return [HistoryOut.of(entry) for entry in entries]
@@ -228,6 +244,7 @@ async def get_history(
 async def export_session(
     session_id: uuid.UUID, payload: ExportIn, user: CurrentUser, session: SessionDep
 ) -> Response:
+    """打包并下载会话的导出图片。"""
     record = await _load(session, user, session_id)
     try:
         packed = await exports.pack(session, record, payload.asset_ids)
@@ -244,6 +261,7 @@ async def export_session(
 async def list_messages(
     session_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> list[TurnOut]:
+    """返回会话中的 Agent 对话记录。"""
     record = await _load(session, user, session_id)
     return [TurnOut.of(turn) for turn in await agent_service.turns_of(session, record)]
 
@@ -252,6 +270,7 @@ async def list_messages(
 async def send_message(
     session_id: uuid.UUID, payload: MessageIn, user: CurrentUser, session: SessionDep
 ) -> TurnOut:
+    """提交自然语言编辑指令并创建执行计划。"""
     record = await _load(session, user, session_id)
     return TurnOut.of(await agent_service.respond(session, record, payload.text))
 
@@ -260,6 +279,7 @@ async def send_message(
 async def confirm_plan(
     session_id: uuid.UUID, turn_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> TurnOut:
+    """确认并启动本轮编辑计划。"""
     record = await _load(session, user, session_id)
     try:
         return TurnOut.of(await agent_service.confirm(session, record, turn_id))
@@ -273,6 +293,7 @@ async def confirm_plan(
 async def cancel_plan(
     session_id: uuid.UUID, turn_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> TurnOut:
+    """取消本轮编辑计划。"""
     record = await _load(session, user, session_id)
     try:
         return TurnOut.of(await agent_service.cancel(session, record, turn_id))
@@ -286,6 +307,7 @@ async def cancel_plan(
 async def retry_plan(
     session_id: uuid.UUID, turn_id: uuid.UUID, user: CurrentUser, session: SessionDep
 ) -> TurnOut:
+    """重试本轮计划中失败的步骤。"""
     record = await _load(session, user, session_id)
     try:
         return TurnOut.of(await agent_service.retry(session, record, turn_id))

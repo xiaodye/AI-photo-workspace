@@ -21,33 +21,59 @@ class LayerKind(enum.StrEnum):
 class Transform(BaseModel):
     """相对画布左上角的位置与形变，缩放为倍率而非像素。"""
 
+    # 相对画布左上角的横坐标，单位为像素。
     x: float = 0
+    # 相对画布左上角的纵坐标，单位为像素。
     y: float = 0
+    # 水平方向的绝对缩放倍率。
     scale_x: float = 1
+    # 垂直方向的绝对缩放倍率。
     scale_y: float = 1
+    # 绝对旋转角度，单位为度。
     rotation: float = 0
 
 
 class Layer(BaseModel):
+    """画布中的单个图层。"""
+
+    # 唯一标识。
     id: str
+    # 图层类型：图片、文字或形状。
     kind: LayerKind
+    # 显示名称。
     name: str
+    # 图层原始宽度，单位为像素。
     width: int
+    # 图层原始高度，单位为像素。
     height: int
+    # 关联素材的标识。
     asset_id: uuid.UUID | None = None
+    # 图层的位置、缩放和旋转参数。
     transform: Transform = Field(default_factory=Transform)
+    # 图层不透明度，取值为 0～1。
     opacity: float = 1
+    # 图层是否可见。
     visible: bool = True
+    # 图层是否锁定。
     locked: bool = False
+    # 用于识别重复拆层对象的选区指纹。
     source_hash: str | None = None
+    # 文本内容。
     text: str | None = None
+    # 文字字号，单位为像素。
     font_size: float = 24
+    # 文字填充颜色。
     fill: str = "#141414"
 
 
 class LayerDocument(BaseModel):
+    """画布尺寸与图层集合。"""
+
+    # 画布宽度，单位为像素。
     width: int
+    # 画布高度，单位为像素。
     height: int
+    # 按堆叠顺序排列的图层列表。
     layers: list[Layer] = Field(default_factory=list)
 
 

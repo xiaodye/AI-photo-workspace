@@ -29,28 +29,49 @@ _FLIP_LABELS = {"horizontal": "水平翻转", "vertical": "垂直翻转"}
 
 
 class FlipIn(LayerRef):
+    """图层翻转参数。"""
+
+    # 翻转方向：水平或垂直。
     direction: Literal["horizontal", "vertical"]
 
 
 class OpacityIn(LayerRef):
+    """图层不透明度参数。"""
+
+    # 图层不透明度，取值为 0～1。
     opacity: float = Field(ge=0, le=1)
 
 
 class VisibleIn(LayerRef):
+    """图层显隐参数。"""
+
+    # 图层是否可见。
     visible: bool
 
 
 class TextIn(LayerRef):
+    """文字图层的内容和样式参数。"""
+
+    # 文本内容。
     text: str = Field(max_length=500)
+    # 文字字号，单位为像素。
     font_size: float | None = Field(default=None, ge=8, le=400)
+    # 文字填充颜色。
     fill: str | None = Field(default=None, pattern=r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
 
 class ScaleIn(LayerRef):
+    """图层缩放及定位参数。"""
+
+    # 相对于当前尺寸的统一缩放倍率。
     factor: float | None = Field(default=None, gt=0, le=8)
+    # 水平方向的绝对缩放倍率。
     scale_x: float | None = Field(default=None, gt=0, le=8)
+    # 垂直方向的绝对缩放倍率。
     scale_y: float | None = Field(default=None, gt=0, le=8)
+    # 相对画布左上角的横坐标，单位为像素。
     x: float | None = None
+    # 相对画布左上角的纵坐标，单位为像素。
     y: float | None = None
 
     @model_validator(mode="after")
@@ -61,7 +82,11 @@ class ScaleIn(LayerRef):
 
 
 class RotateIn(LayerRef):
+    """图层旋转参数。"""
+
+    # 相对于当前朝向的旋转角度，单位为度。
     angle: float | None = Field(default=None, ge=-360, le=360)
+    # 绝对旋转角度，单位为度。
     rotation: float | None = Field(default=None, ge=-360, le=360)
 
     @model_validator(mode="after")
@@ -72,13 +97,22 @@ class RotateIn(LayerRef):
 
 
 class ReorderIn(LayerRef):
+    """图层堆叠顺序调整参数。"""
+
+    # 图层排序目标：置顶、置底、上移或下移。
     place: Literal["top", "bottom", "up", "down"]
 
 
 class MoveIn(LayerRef):
+    """图层位置调整参数。"""
+
+    # 相对画布左上角的横坐标，单位为像素。
     x: float | None = None
+    # 相对画布左上角的纵坐标，单位为像素。
     y: float | None = None
+    # 水平方向的相对位移，单位为像素。
     dx: float | None = None
+    # 垂直方向的相对位移，单位为像素。
     dy: float | None = None
 
     @model_validator(mode="after")
@@ -89,9 +123,15 @@ class MoveIn(LayerRef):
 
 
 class CropRect(BaseModel):
+    """归一化坐标表示的裁剪框。"""
+
+    # 裁剪框左边界占画布宽度的比例。
     x: float = Field(ge=0, le=1)
+    # 裁剪框上边界占画布高度的比例。
     y: float = Field(ge=0, le=1)
+    # 裁剪框宽度占画布宽度的比例。
     width: float = Field(gt=0, le=1)
+    # 裁剪框高度占画布高度的比例。
     height: float = Field(gt=0, le=1)
 
     @model_validator(mode="after")
@@ -102,7 +142,11 @@ class CropRect(BaseModel):
 
 
 class CropIn(BaseModel):
+    """画布裁剪参数。"""
+
+    # 输出图片的宽高比。
     ratio: Ratio | None = None
+    # 归一化坐标表示的裁剪区域。
     rect: CropRect | None = None
 
     @model_validator(mode="after")

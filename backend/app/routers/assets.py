@@ -20,6 +20,7 @@ async def upload(
     session: SessionDep,
     file: Annotated[UploadFile, File()],
 ) -> AssetOut:
+    """上传图片并创建素材记录。"""
     data = await file.read()
     if len(data) > MAX_FILE_BYTES:
         raise HTTPException(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "文件超过 20 MB 上限")
@@ -41,6 +42,7 @@ async def list_assets(
     session: SessionDep,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
 ) -> list[AssetOut]:
+    """返回当前用户的素材列表。"""
     records = await asset_service.list_for_user(session, user.id, limit)
     return [AssetOut.of(asset) for asset in records]
 
@@ -51,6 +53,7 @@ async def list_library(
     session: SessionDep,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
 ) -> list[LibraryGroupOut]:
+    """返回按会话分组的素材库。"""
     groups = await asset_service.library_for_user(session, user.id, limit)
     return [
         LibraryGroupOut(
@@ -66,6 +69,7 @@ async def list_library(
 
 @router.get("/{asset_id}")
 async def get_asset(asset_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> AssetOut:
+    """返回指定素材的信息与访问地址。"""
     asset = await asset_service.get_for_user(session, user.id, asset_id)
     if asset is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "素材不存在")

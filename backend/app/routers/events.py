@@ -22,11 +22,13 @@ _MAX_STREAM_SECONDS = 600.0
 
 
 def _frame(payload: dict) -> str:
+    """将任务事件编码为 SSE 消息。"""
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
 @router.get("/runs/{run_id}")
 async def stream_run(run_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> Response:
+    """订阅并推送指定任务的实时执行状态。"""
     try:
         await runs.get(session, run_id, user.id)
     except RunNotFound as exc:
@@ -34,6 +36,7 @@ async def stream_run(run_id: uuid.UUID, user: CurrentUser, session: SessionDep) 
 
     async def stream() -> AsyncIterator[str]:
         # 先订阅再读快照，否则任务在两步之间结束会让连接一直空等
+        """推送任务状态快照、进度事件和连接心跳。"""
         async with events.subscribe(run_id) as messages:
             run = await runs.get(session, run_id, user.id)
             yield _frame(runs.snapshot(run))

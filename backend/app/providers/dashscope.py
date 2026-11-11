@@ -141,6 +141,7 @@ class DashScopeImageProvider(ImageProvider):
         return task_id
 
     async def _await_result(self, task_id: str, on_progress: ProgressCallback | None) -> list[str]:
+        """轮询远端图像任务并获取执行结果。"""
         loop = asyncio.get_running_loop()
         deadline = loop.time() + _POLL_TIMEOUT
         started = loop.time()

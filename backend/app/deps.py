@@ -14,6 +14,7 @@ async def current_user(
     session: SessionDep,
     token: Annotated[str | None, Cookie(alias=SESSION_COOKIE)] = None,
 ) -> User:
+    """根据登录令牌获取当前用户。"""
     if token is None:
         raise _UNAUTHENTICATED
 

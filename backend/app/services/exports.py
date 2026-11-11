@@ -24,12 +24,18 @@ class UnknownExportAsset(Exception):
 
 @dataclass(frozen=True)
 class PackedExport:
+    """打包后的导出文件及其清单。"""
+
+    # ZIP 压缩包的原始字节。
     data: bytes
+    # 下载文件的名称。
     filename: str
+    # 压缩包内图片的导出清单。
     manifest: ExportManifestOut | None = None
 
     @property
     def disposition(self) -> str:
+        """生成包含下载文件名的响应头值。"""
         return f"attachment; filename*=UTF-8''{quote(self.filename)}"
 
 
@@ -45,6 +51,7 @@ def _extension(asset: Asset | None) -> str:
 
 
 def _pick(wall: list[Asset], asset_ids: list[uuid.UUID]) -> list[Asset]:
+    """筛选会话图片墙中需要导出的素材。"""
     by_id = {asset.id: asset for asset in wall}
     if asset_ids:
         chosen = []
@@ -58,6 +65,7 @@ def _pick(wall: list[Asset], asset_ids: list[uuid.UUID]) -> list[Asset]:
 
 
 async def _pixels(session: AsyncSession, record: EditSession, asset: Asset | None) -> bytes:
+    """读取导出素材或合成当前画布的图片。"""
     if asset is None or asset.id == record.current_asset_id:
         return await flatten_session(session, record)
     return await storage.get(asset.storage_key)
@@ -66,6 +74,7 @@ async def _pixels(session: AsyncSession, record: EditSession, asset: Asset | Non
 async def pack(
     session: AsyncSession, record: EditSession, asset_ids: list[uuid.UUID]
 ) -> PackedExport:
+    """打包导出图片并生成文件清单。"""
     wall = await sessions.assets_of(session, record)
     chosen = _pick(wall, asset_ids)
     entries: list[tuple[Asset | None, bytes]] = []

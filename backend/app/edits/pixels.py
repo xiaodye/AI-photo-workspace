@@ -37,6 +37,7 @@ def adjust(
     clarity: float = 0,
     vignette: float = 0,
 ) -> bytes:
+    """调整图片色彩、明暗和清晰度，并保留透明通道。"""
     image = Image.open(io.BytesIO(data)).convert("RGBA")
     red, green, blue, alpha = image.split()
     rgb = Image.merge("RGB", (red, green, blue))

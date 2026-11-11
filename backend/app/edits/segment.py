@@ -75,6 +75,7 @@ def _sam_session():
 
 
 def _embedding_of(session, raw: bytes, source: Image.Image):
+    """获取并缓存图片的分割特征。"""
     key = hashlib.sha256(raw).hexdigest()
     with _lock:
         cached = _embeddings.get(key)
@@ -112,6 +113,7 @@ def _encode(session, source: Image.Image):
 
 
 def _decode(session, embedding: dict, prompt: list) -> Image.Image:
+    """根据提示点生成原图尺寸的选区遮罩。"""
     import numpy as np
     from PIL import Image as PILImage
     from rembg.sessions.sam import apply_coords, get_input_points, transform_masks

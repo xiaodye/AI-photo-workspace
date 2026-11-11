@@ -74,6 +74,7 @@ def _composite_text(canvas: Image.Image, layer: Layer) -> None:
 
 
 def _place(canvas: Image.Image, layer: Layer, source: Image.Image) -> None:
+    """按图层变换将图片放置到画布。"""
     transform = layer.transform
     if transform.scale_x < 0:
         source = ImageOps.mirror(source)
@@ -101,6 +102,7 @@ def _place(canvas: Image.Image, layer: Layer, source: Image.Image) -> None:
 
 
 def _paste(canvas: Image.Image, source: Image.Image, left: int, top: int) -> None:
+    """将图片与画布重叠的区域进行透明合成。"""
     src_x, src_y = max(0, -left), max(0, -top)
     dst_x, dst_y = max(0, left), max(0, top)
     width = min(source.width - src_x, canvas.width - dst_x)

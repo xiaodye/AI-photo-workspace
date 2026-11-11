@@ -52,6 +52,7 @@ def assemble(raw: list[dict]) -> list[dict]:
 
 
 def validate(raw: list[dict]) -> list[dict]:
+    """校验工具参数并整理计划步骤及依赖关系。"""
     checked: list[dict] = []
     for step in raw:
         spec = spec_of(step["tool"])
@@ -86,6 +87,7 @@ def needs_confirm(steps: list[dict]) -> bool:
 
 
 def cancel_remaining(steps: list[dict]) -> list[dict]:
+    """取消计划中尚未投递的步骤。"""
     return [
         {**step, "status": CANCELED} if step["status"] in {PENDING, WAITING} else step
         for step in steps
@@ -93,6 +95,7 @@ def cancel_remaining(steps: list[dict]) -> list[dict]:
 
 
 def _is_ready(step: dict, by_id: dict[str, dict]) -> bool:
+    """判断步骤是否已满足调度条件。"""
     if step["status"] not in {PENDING, WAITING} or step.get("run_id"):
         return False
     deps = [by_id[dep] for dep in step["depends_on"]]
@@ -102,6 +105,7 @@ def _is_ready(step: dict, by_id: dict[str, dict]) -> bool:
 
 
 def _cyclic(steps: list[dict]) -> bool:
+    """检测计划步骤的依赖环。"""
     ids = [step["id"] for step in steps]
     incoming = {step_id: 0 for step_id in ids}
     outgoing: dict[str, list[str]] = {step_id: [] for step_id in ids}

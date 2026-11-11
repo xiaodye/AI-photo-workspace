@@ -4,6 +4,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 
 def to_luma(data: bytes, size: tuple[int, int] | None = None) -> Image.Image:
+    """将选区图片转换为灰度遮罩。"""
     mask = Image.open(io.BytesIO(data))
     if mask.mode in {"RGBA", "LA"}:
         mask = mask.split()[-1]
@@ -15,7 +16,7 @@ def to_luma(data: bytes, size: tuple[int, int] | None = None) -> Image.Image:
 
 
 def overlay_png(mask: Image.Image, *, color: tuple[int, int, int] = (95, 152, 173)) -> bytes:
-    """选区可视化：选中处半透明着色，其余全透明。"""
+    """输出选区覆盖图：选中处不透明着色，其余全透明，展示透明度由前端控制。"""
     luma = mask.convert("L")
     overlay = Image.new("RGBA", luma.size, (*color, 0))
     pixels = overlay.load()

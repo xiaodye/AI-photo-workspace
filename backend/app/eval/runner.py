@@ -74,6 +74,7 @@ def _read(path: Path) -> bytes:
 
 
 def evaluate_case(root: Path, case: Case) -> CaseResult:
+    """执行单条评测样例并汇总评分结果。"""
     try:
         source = _read(case.input_path(root))
         produced = run_task(case.task, source, case.params)

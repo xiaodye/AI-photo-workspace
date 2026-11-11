@@ -11,6 +11,7 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 
 async def _probe(awaitable: Awaitable) -> str:
+    """检测依赖服务的连接状态。"""
     try:
         await awaitable
         return "ok"
@@ -20,6 +21,7 @@ async def _probe(awaitable: Awaitable) -> str:
 
 @router.get("")
 async def health(session: SessionDep) -> dict[str, str]:
+    """返回 API、数据库和对象存储的健康状态。"""
     database, object_storage = await asyncio.gather(
         _probe(session.execute(text("select 1"))),
         _probe(asyncio.to_thread(storage.ensure_bucket)),

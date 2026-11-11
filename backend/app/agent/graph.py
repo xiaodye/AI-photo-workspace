@@ -43,9 +43,15 @@ _REFUSAL_LIMIT = 60
 
 
 class AgentState(TypedDict):
+    """Agent 规划流程中传递的状态数据。"""
+
+    # 用户本轮提交的编辑目标。
     goal: str
+    # 用于规划工具步骤的会话上下文。
     context: str
+    # 本轮工具执行计划及各步骤的进度。
     plan: list[dict]
+    # Agent 向用户返回的说明。
     reply: str
 
 
