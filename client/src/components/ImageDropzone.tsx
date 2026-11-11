@@ -15,6 +15,11 @@ export default function ImageDropzone({ onFile, disabled, hint, multiple }: Prop
   const [dragging, setDragging] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  /**
+   * 校验选中的单张图片，合规时通知上传入口。
+   *
+   * @param file 用户选择的本地图片。
+   */
   const accept = (file: File | undefined) => {
     if (!file) return
     const problem = checkFile(file)

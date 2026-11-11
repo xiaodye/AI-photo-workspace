@@ -18,11 +18,23 @@ const UNDOABLE = new Set([
   'flip_layer',
 ])
 
+/**
+ * 查询工具的中文操作名，未知工具返回空文案。
+ *
+ * @param tool 服务端注册的工具名称。
+ * @returns
+ */
 export function toolLabel(tool: string | undefined) {
   if (!tool) return ''
   return ACTION_LABELS[tool] ?? ''
 }
 
+/**
+ * 判断工具完成提示是否应提供撤销入口。
+ *
+ * @param tool 服务端注册的工具名称。
+ * @returns
+ */
 export function offersUndo(tool: string | undefined) {
   return Boolean(tool && UNDOABLE.has(tool))
 }

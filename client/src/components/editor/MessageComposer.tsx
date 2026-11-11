@@ -16,6 +16,9 @@ export default function MessageComposer({
   const [text, setText] = useState('')
   const canSend = text.trim().length > 0 && !pending
 
+  /**
+   * 过滤空白需求，提交后清空本地输入。
+   */
   const submit = () => {
     if (!canSend) return
     onSend(text.trim())

@@ -34,11 +34,24 @@ const SHAPE = 2.2
 /** 运行中的展示上限，留出最后一格给真正的完成。 */
 export const PROGRESS_CEILING = 99
 
+/**
+ * 取得工具的预估耗时，未知工具使用通用时长。
+ *
+ * @param tool 服务端注册的工具名称。
+ * @returns
+ */
 export function pacingSeconds(tool: string | undefined) {
   if (!tool) return FALLBACK
   return SECONDS[tool] ?? FALLBACK
 }
 
+/**
+ * 根据耗时估算展示进度，渐近上限但不代替真实完成状态。
+ *
+ * @param elapsedMs 任务已运行时长，单位为毫秒。
+ * @param seconds 工具预估耗时，单位为秒。
+ * @returns
+ */
 export function pacedProgress(elapsedMs: number, seconds: number) {
   const tau = (seconds / SHAPE) * 1000
   return PROGRESS_CEILING * (1 - Math.exp(-elapsedMs / tau))

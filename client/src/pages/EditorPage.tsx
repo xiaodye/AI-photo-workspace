@@ -63,6 +63,11 @@ function Workspace({ sessionId }: { sessionId: string }) {
 
   useEffect(() => {
     if (!session) return
+    /**
+     * 处理编辑器快捷键，输入框内不拦截，撤销优先作用于选区。
+     *
+     * @param event 当前浏览器或画布交互事件。
+     */
     const onKey = (event: KeyboardEvent) => {
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return
@@ -197,7 +202,11 @@ function Workspace({ sessionId }: { sessionId: string }) {
   )
 }
 
-/** 提示按模式分组，这样切模式会重播一次入场，但进度百分比刷新不会。 */
+/**
+ * 提示按模式分组，这样切模式会重播一次入场，但进度百分比刷新不会。
+ *
+ * @returns
+ */
 function canvasHint({
   busy,
   pending,

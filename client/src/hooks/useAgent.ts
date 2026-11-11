@@ -4,8 +4,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { agentApi } from '@/api/agent'
 import { isTerminal } from '@/api/runs'
 
+/**
+ * 构造会话对话轮次缓存键。
+ *
+ * @param sessionId 当前操作所属的会话标识。
+ * @returns
+ */
 const turnsKey = (sessionId: string) => ['session', sessionId, 'messages']
 
+/**
+ * 返回同时刷新对话、会话文档及历史的回调。
+ *
+ * @param sessionId 当前操作所属的会话标识。
+ * @returns
+ */
 function useRefreshTurn(sessionId: string) {
   const queryClient = useQueryClient()
   return () => {
@@ -15,6 +27,12 @@ function useRefreshTurn(sessionId: string) {
   }
 }
 
+/**
+ * 读取对话轮次，执行中持续补拉，结束时刷新文档与历史。
+ *
+ * @param sessionId 当前操作所属的会话标识。
+ * @returns
+ */
 export function useTurns(sessionId: string) {
   const queryClient = useQueryClient()
   const query = useQuery({
@@ -42,6 +60,12 @@ export function useTurns(sessionId: string) {
   return query
 }
 
+/**
+ * 提交当前会话的用户需求并刷新对话关联数据。
+ *
+ * @param sessionId 当前操作所属的会话标识。
+ * @returns
+ */
 export function useSendMessage(sessionId: string) {
   const refresh = useRefreshTurn(sessionId)
   return useMutation({
@@ -50,6 +74,12 @@ export function useSendMessage(sessionId: string) {
   })
 }
 
+/**
+ * 提供计划确认、取消、重试及统一的请求忙碌状态。
+ *
+ * @param sessionId 当前操作所属的会话标识。
+ * @returns
+ */
 export function usePlanActions(sessionId: string) {
   const refresh = useRefreshTurn(sessionId)
   const confirm = useMutation({
@@ -65,8 +95,23 @@ export function usePlanActions(sessionId: string) {
     onSuccess: refresh,
   })
   return {
+    /**
+     * 确认执行指定轮次的 Agent 计划。
+     *
+     * @param turnId 需要确认、取消或重试的对话轮次标识。
+     */
     confirm: (turnId: string) => confirm.mutate(turnId),
+    /**
+     * 取消指定轮次的 Agent 计划。
+     *
+     * @param turnId 需要确认、取消或重试的对话轮次标识。
+     */
     cancel: (turnId: string) => cancel.mutate(turnId),
+    /**
+     * 重新执行指定轮次的失败计划。
+     *
+     * @param turnId 需要确认、取消或重试的对话轮次标识。
+     */
     retry: (turnId: string) => retry.mutate(turnId),
     busy: confirm.isPending || cancel.isPending || retry.isPending,
   }

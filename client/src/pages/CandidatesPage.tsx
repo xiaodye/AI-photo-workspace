@@ -14,6 +14,9 @@ export default function CandidatesPage() {
   const createSession = useCreateSession()
 
   // 采用一张进入编辑，同批其余候选一并带进会话图片墙
+  /**
+   * 将选中候选图设为当前图，连同其余候选创建会话。
+   */
   const adopt = () =>
     picked &&
     createSession.mutate(

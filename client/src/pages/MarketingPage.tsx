@@ -29,6 +29,11 @@ function Picker() {
   const { data: groups = [], isPending } = useAssetLibrary()
   const createSession = useCreateSession()
 
+  /**
+   * 打开已有会话的营销工作区。
+   *
+   * @param id 已有会话的标识。
+   */
   const open = (id: string) => navigate(`/marketing/${id}`)
 
   return (
@@ -92,6 +97,11 @@ function Workspace({ sessionId }: { sessionId: string }) {
   const current = session.assets.find((asset) => asset.id === session.current_asset_id)
   const items = session.assets.filter((asset) => packable(asset, session.current_asset_id))
 
+  /**
+   * 切换单张成品的打包选中状态。
+   *
+   * @param id 当前记录的唯一标识。
+   */
   const toggle = (id: string) => {
     const next = new Set(selected)
     if (next.has(id)) next.delete(id)
@@ -99,20 +109,35 @@ function Workspace({ sessionId }: { sessionId: string }) {
     setPicked([...next])
   }
 
+  /**
+   * 在全选与清空可打包素材之间切换。
+   */
   const toggleAll = () => {
     const ids = items.map((asset) => asset.id)
     setPicked(ids.every((id) => selected.includes(id)) ? [] : ids)
   }
 
   // 不传 ratios 是「一次三个尺寸」，传了则只跑该比例
+  /**
+   * 检查当前投放比例是否正在准备，避免误标其他按钮。
+   *
+   * @param ratio 目标画幅比例。
+   * @returns
+   */
   const deliveryRunning = (ratio?: string) =>
     tools.isRunning('prepare_delivery_sizes', (params) => {
       const ratios = params.ratios as string[] | undefined
       return ratio ? ratios?.[0] === ratio : !ratios
     })
 
+  /**
+   * 下载选中成品的压缩包，并释放浏览器临时地址。
+   */
   const download = () =>
     pack.mutate(selected, {
+      /**
+       * 请求成功后同步关联状态并执行后续界面操作。
+       */
       onSuccess: ({ blob, filename }) => {
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')

@@ -1,11 +1,23 @@
 import { useEffect, useState } from 'react'
 
 /** safe 表示位图可被读取像素，只有它为真时才能在画布上跑实时滤镜。 */
-export type CanvasImage = { element: HTMLImageElement; safe: boolean; url: string }
+export type CanvasImage = {
+  /** 已经解码的图片元素。 */
+  element: HTMLImageElement;
+  /** 是否可安全读取位图像素并应用实时滤镜。 */
+  safe: boolean;
+  /** 资源访问地址，可能为有时效的签名 URL。 */
+  url: string
+}
 
 const LIMIT = 16
 const cache = new Map<string, CanvasImage>()
 
+/**
+ * 将位图提升为最近使用项，并淘汰超出容量的旧缓存。
+ *
+ * @param image 已经解码的图片数据。
+ */
 function remember(image: CanvasImage) {
   cache.delete(image.url)
   cache.set(image.url, image)
@@ -16,10 +28,23 @@ function remember(image: CanvasImage) {
   }
 }
 
+/**
+ * 从画布位图缓存读取图片，未命中时返回空值。
+ *
+ * @param url 资源访问地址，可能为有时效的签名 URL。
+ * @returns
+ */
 function read(url: string) {
   return cache.get(url) ?? null
 }
 
+/**
+ * 解码图片，并按请求决定是否启用可读像素的跨源模式。
+ *
+ * @param url 资源访问地址，可能为有时效的签名 URL。
+ * @param safe 是否请求可读取像素的跨源位图。
+ * @returns
+ */
 function decode(url: string, safe: boolean) {
   return new Promise<CanvasImage>((resolve, reject) => {
     const element = new Image()
@@ -30,6 +55,12 @@ function decode(url: string, safe: boolean) {
   })
 }
 
+/**
+ * 预加载位图并缓存，跨源失败时降级为仅可绘制的图片。
+ *
+ * @param url 资源访问地址，可能为有时效的签名 URL。
+ * @returns
+ */
 export function preloadCanvasImage(url: string) {
   const hit = read(url)
   if (hit) return Promise.resolve(hit)
@@ -42,7 +73,12 @@ export function preloadCanvasImage(url: string) {
     .catch(() => null)
 }
 
-/** 把 URL 解码为 Konva 可直接绘制的位图。换源时先留着上一张，避免画布闪白。 */
+/**
+ * 把 URL 解码为 Konva 可直接绘制的位图。换源时先留着上一张，避免画布闪白。
+ *
+ * @param url 资源访问地址，可能为有时效的签名 URL。
+ * @returns
+ */
 export function useCanvasImage(url: string | undefined) {
   const [image, setImage] = useState<CanvasImage | null>(() => (url ? read(url) : null))
 

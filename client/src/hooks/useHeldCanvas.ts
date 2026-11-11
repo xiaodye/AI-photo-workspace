@@ -3,17 +3,32 @@ import { useEffect, useState } from 'react'
 import type { LayerDocument } from '@/api/sessions'
 import { preloadCanvasImage } from '@/hooks/useCanvasImage'
 
-export type HeldCanvas = { document: LayerDocument; urls: Map<string, string> }
+export type HeldCanvas = {
+  /** 当前会话的画布文档。 */
+  document: LayerDocument;
+  /** 按素材标识索引的图片地址。 */
+  urls: Map<string, string>
+}
 
 /**
  * 只按画幅和图层资源判断是不是换图。签名 URL 每次回写都会变，
  * 不能算进去，否则缩放、位移也会被当成切图，旧倍率先闪一下再淡出。
+ *
+ * @param document 当前会话的画布文档。
+ * @returns
  */
 export function canvasStamp(document: LayerDocument) {
   const layers = document.layers.map((layer) => `${layer.id}:${layer.asset_id ?? ''}`).join('|')
   return `${document.width}x${document.height}:${layers}`
 }
 
+/**
+ * 收集当前文档可见图片层需要预加载的地址。
+ *
+ * @param document 当前会话的画布文档。
+ * @param urls 按素材标识索引的图片地址。
+ * @returns
+ */
 function needed(document: LayerDocument, urls: Map<string, string>) {
   return document.layers.flatMap((layer) => {
     if (!layer.visible || layer.kind !== 'image' || !layer.asset_id) return []
@@ -22,10 +37,19 @@ function needed(document: LayerDocument, urls: Map<string, string>) {
   })
 }
 
-/** 下一张图预加载完成前继续画当前帧，避免切图时空一层再弹出来。 */
+/**
+ * 下一张图预加载完成前继续画当前帧，避免切图时空一层再弹出来。
+ *
+ * @param document 当前会话的画布文档。
+ * @param urls 按素材标识索引的图片地址。
+ * @returns
+ */
 export function useHeldCanvas(document: LayerDocument, urls: Map<string, string>): HeldCanvas {
   const incomingKey = canvasStamp(document)
-  const [held, setHeld] = useState<HeldCanvas & { key: string }>({
+  const [held, setHeld] = useState<HeldCanvas & {
+    /** 用于区分数据或渲染状态的键。 */
+    key: string
+  }>({
     document,
     urls,
     key: incomingKey,
@@ -41,6 +65,9 @@ export function useHeldCanvas(document: LayerDocument, urls: Map<string, string>
     }
 
     let cancelled = false
+    /**
+     * 仅在预加载等待仍有效时切换到新画面。
+     */
     const apply = () => {
       if (!cancelled) setHeld(next)
     }

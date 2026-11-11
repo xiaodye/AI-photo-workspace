@@ -17,7 +17,12 @@ const PREVIEW_KEYS = [
 
 export type AdjustPreview = Record<(typeof PREVIEW_KEYS)[number], number>
 
-/** 全部为 0 时返回 null，画布据此跳过缓存与滤镜。 */
+/**
+ * 全部为 0 时返回 null，画布据此跳过缓存与滤镜。
+ *
+ * @param values 当前调色参数，零表示不调整。
+ * @returns
+ */
 export function toAdjustPreview(values: Record<string, number> | null): AdjustPreview | null {
   if (!values) return null
   const preview = Object.fromEntries(
@@ -26,6 +31,12 @@ export function toAdjustPreview(values: Record<string, number> | null): AdjustPr
   return PREVIEW_KEYS.some((key) => preview[key]) ? preview : null
 }
 
+/**
+ * 创建原地修改像素的调色滤镜，不在前端执行锐化与清晰度卷积。
+ *
+ * @param values 当前调色参数，零表示不调整。
+ * @returns
+ */
 export function makeAdjustFilter(values: AdjustPreview) {
   return (imageData: ImageData) => {
     const { data, width, height } = imageData
@@ -88,6 +99,13 @@ export function makeAdjustFilter(values: AdjustPreview) {
   }
 }
 
+/**
+ * 预计算亮度与对比度查找表，减少逐像素重复运算。
+ *
+ * @param values 当前调色参数，零表示不调整。
+ * @param pivot 对比度计算轴心，使用平均亮度。
+ * @returns
+ */
 function brightnessLut(values: AdjustPreview, pivot: number) {
   const lut = new Uint8ClampedArray(256)
   for (let value = 0; value < 256; value += 1) {
@@ -97,6 +115,13 @@ function brightnessLut(values: AdjustPreview, pivot: number) {
   return lut
 }
 
+/**
+ * 预计算高光、阴影及通道偏移的查找表。
+ *
+ * @param values 当前调色参数，零表示不调整。
+ * @param offset 当前颜色通道的偏移量。
+ * @returns
+ */
 function toneLut(values: AdjustPreview, offset: number) {
   const lut = new Uint8ClampedArray(256)
   for (let value = 0; value < 256; value += 1) {
@@ -106,7 +131,12 @@ function toneLut(values: AdjustPreview, offset: number) {
   return lut
 }
 
-/** 后端的对比度以整图平均灰度为轴心，这里同样先统计一遍 */
+/**
+ * 后端的对比度以整图平均灰度为轴心，这里同样先统计一遍
+ *
+ * @param data 按 RGBA 顺序排列的像素通道。
+ * @returns
+ */
 function meanLuma(data: Uint8ClampedArray) {
   let sum = 0
   for (let index = 0; index < data.length; index += 4) {
@@ -115,10 +145,24 @@ function meanLuma(data: Uint8ClampedArray) {
   return sum / (data.length / 4)
 }
 
+/**
+ * 按 RGB 加权计算像素亮度。
+ *
+ * @param red 红色通道值。
+ * @param green 绿色通道值。
+ * @param blue 蓝色通道值。
+ * @returns
+ */
 function luma(red: number, green: number, blue: number) {
   return 0.299 * red + 0.587 * green + 0.114 * blue
 }
 
+/**
+ * 将通道值限制在 0～255 并截取为整数。
+ *
+ * @param value 当前受控值。
+ * @returns
+ */
 function clip(value: number) {
   return value < 0 ? 0 : value > 255 ? 255 : value | 0
 }

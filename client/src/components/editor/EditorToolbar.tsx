@@ -36,9 +36,19 @@ export default function EditorToolbar({
   const ui = useEditorUi()
 
   // 只有发起的那个按钮显示百分比，其余按钮照常禁用
+  /**
+   * 仅为当前匹配工具返回进度，其他按钮不展示忙碌百分比。
+   *
+   * @param tool 服务端注册的工具名称。
+   * @param match 进一步匹配工具参数的可选条件。
+   * @returns
+   */
   const running = (tool: string, match?: (params: Record<string, unknown>) => boolean) =>
     tools.isRunning(tool, match) ? tools.pendingProgress : null
 
+  /**
+   * 将像素裁剪框归一化后提交工具，并关闭裁剪模式。
+   */
   const confirmCrop = () => {
     if (!ui.cropRect) return
     tools.invoke('crop_canvas', {
@@ -330,6 +340,9 @@ export default function EditorToolbar({
 function TitleField({ value, onCommit }: { value: string; onCommit: (title: string) => void }) {
   const [draft, setDraft] = useState<string | null>(null)
 
+  /**
+   * 提交清理后的非空标题，避免重复写入相同值。
+   */
   const commit = () => {
     const next = draft?.trim()
     setDraft(null)

@@ -46,11 +46,19 @@ export default function AuthPage() {
 
   if (!isLoading && user) return <Navigate to="/create" replace />
 
+  /**
+   * 阻止表单刷新并提交当前模式的认证请求。
+   *
+   * @param event 当前浏览器或画布交互事件。
+   */
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     action.mutate({ username, password }, { onSuccess: () => navigate('/create', { replace: true }) })
   }
 
+  /**
+   * 清除上次认证结果并切换登录或注册模式。
+   */
   const switchMode = () => {
     action.reset()
     setParams({ mode: copy.switchTo })

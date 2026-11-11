@@ -25,6 +25,9 @@ export default function WorkbenchLayout() {
   const { user } = useCurrentUser()
   const { logout } = useAuthActions()
 
+  /**
+   * 退出当前登录状态并交由认证路由处理后续访问。
+   */
   const signOut = () =>
     logout.mutate(undefined, { onSuccess: () => navigate('/', { replace: true }) })
 

@@ -88,6 +88,9 @@ export default function CanvasStage({
   const interactive = !selecting && !cropOpen && !compareOpen
   const stageDraggable = !cropOpen && !selecting && !holdingStage
 
+  /**
+   * 在正式遮罩就绪或选区清除后移除临时预览。
+   */
   const settleOverlay = useCallback(() => {
     stroke.settle()
     point.settle()
@@ -111,6 +114,12 @@ export default function CanvasStage({
 
   const fitted = useRef('')
 
+  /**
+   * 将舞台指针转换为画布内 0～1 坐标，画布外返回空值。
+   *
+   * @param stage 服务端当前处理阶段的文案。
+   * @returns
+   */
   const canvasPoint = (stage: Konva.Stage | null) => {
     const pointer = stage?.getRelativePointerPosition()
     if (!pointer) return null
@@ -361,12 +370,24 @@ function CanvasGhost({
   )
 }
 
+/**
+ * 登记图层节点，使缩放控件在选中节点挂载时及时刷新。
+ *
+ * @param selectedId 选中图层的标识。
+ * @returns
+ */
 function useLayerNodes(selectedId: string | null) {
   const nodes = useRef(new Map<string, Konva.Node>())
   const selectedRef = useRef(selectedId)
   selectedRef.current = selectedId
   const [, bump] = useState(0)
 
+  /**
+   * 登记或移除图层节点，选中节点变化时触发重渲染。
+   *
+   * @param id 当前记录的唯一标识。
+   * @param node 与图层绑定的 Konva 节点。
+   */
   const register = useCallback((id: string, node: Konva.Node | null) => {
     const prev = nodes.current.get(id) ?? null
     if (prev === node) return
@@ -381,6 +402,13 @@ function useLayerNodes(selectedId: string | null) {
   }
 }
 
+/**
+ * 提供图层节点引用并向父级登记挂载或卸载结果。
+ *
+ * @param id 当前记录的唯一标识。
+ * @param onRegister 登记或移除图层节点的回调。
+ * @returns
+ */
 function useLayerNode(
   id: string,
   onRegister?: (id: string, node: Konva.Node | null) => void,
@@ -388,6 +416,11 @@ function useLayerNode(
   const nodeRef = useRef<Konva.Node | null>(null)
   const registerRef = useRef(onRegister)
   registerRef.current = onRegister
+  /**
+   * 同步当前图层节点引用并通知登记回调。
+   *
+   * @param node 与图层绑定的 Konva 节点。
+   */
   const setRef = useCallback(
     (node: Konva.Node | null) => {
       nodeRef.current = node
@@ -604,6 +637,11 @@ function TextEditor({
     ref.current?.select()
   }, [])
 
+  /**
+   * 仅结算一次文字编辑，区分取消和提交，防止失焦重复写入。
+   *
+   * @param next 本次准备应用的新值。
+   */
   const finish = (next: string | null) => {
     if (done.current) return
     done.current = true
@@ -723,11 +761,24 @@ type Drop = { x: number; y: number }
 /** 拖角写入服务端期间钉住的缩放与位置，两者必须成对，否则画面会错位。 */
 type Pinned = { id: string; scale: number; x: number; y: number }
 
+/**
+ * 生成位置与缩放指纹，用于识别服务端变换是否已回写。
+ *
+ * @param layer 当前操作的文档图层。
+ * @returns
+ */
 function transformStamp(layer: Layer) {
   const { x, y, scale_x, scale_y } = layer.transform
   return `${layer.id}:${x},${y},${scale_x},${scale_y}`
 }
 
+/**
+ * 按容差检查文档变换是否追上钉住的缩放与位置。
+ *
+ * @param layer 当前操作的文档图层。
+ * @param pinned 服务端回写前保留的图层缩放与位置。
+ * @returns
+ */
 function samePinned(layer: Layer, pinned: Pinned) {
   const { x, y, scale_x } = layer.transform
   return (
@@ -737,6 +788,15 @@ function samePinned(layer: Layer, pinned: Pinned) {
   )
 }
 
+/**
+ * 按拖动、钉住、预览、文档的优先级求图层中心坐标。
+ *
+ * @param layer 当前操作的文档图层。
+ * @param preview 尚未由服务端结果替换的临时预览。
+ * @param drop 拖动结束后尚未写回文档的落点。
+ * @param pinned 服务端回写前保留的图层缩放与位置。
+ * @returns
+ */
 function layerPoint(
   layer: Layer,
   preview: LayerPreview | null,
@@ -749,6 +809,14 @@ function layerPoint(
   }
 }
 
+/**
+ * 取得等比缩放幅度并保留各轴的翻转方向。
+ *
+ * @param layer 当前操作的文档图层。
+ * @param preview 尚未由服务端结果替换的临时预览。
+ * @param pinned 服务端回写前保留的图层缩放与位置。
+ * @returns
+ */
 function layerScale(layer: Layer, preview: LayerPreview | null, pinned: Pinned | null) {
   const magnitude = pinned?.scale ?? preview?.scale ?? Math.abs(layer.transform.scale_x)
   return {
@@ -760,10 +828,27 @@ function layerScale(layer: Layer, preview: LayerPreview | null, pinned: Pinned |
 const MIN_LAYER_SCALE = 0.1
 const MAX_LAYER_SCALE = 8
 
+/**
+ * 将图层缩放倍率限制在编辑器允许的范围。
+ *
+ * @param value 当前受控值。
+ * @returns
+ */
 function clampLayerScale(value: number) {
   return Math.min(MAX_LAYER_SCALE, Math.max(MIN_LAYER_SCALE, value))
 }
 
+/**
+ * 协调图层选择、拖动与舞台互斥，等待服务端位置追上预览。
+ *
+ * @param layer 当前操作的文档图层。
+ * @param interactive 是否允许图层接收选择与拖动交互。
+ * @param stageDraggable 是否允许拖动整个舞台。
+ * @param onSelect 选中图层时的回调。
+ * @param onMove 提交图层文档像素位置的回调。
+ * @param onHoldStage 暂停或恢复舞台交互的回调。
+ * @returns
+ */
 function useLayerInteract(
   layer: Layer,
   interactive: boolean,
@@ -783,10 +868,18 @@ function useLayerInteract(
     }
   }, [layer.transform.x, layer.transform.y, drop])
 
+  /**
+   * 在图层交互结束后恢复舞台原有的拖动能力。
+   *
+   * @param node 与图层绑定的 Konva 节点。
+   */
   const restoreStage = (node: Konva.Node) => {
     node.getStage()?.draggable(stageDraggable)
   }
 
+  /**
+   * 忽略拖动结束产生的点击，仅在真正点击时选中图层。
+   */
   const pick = () => {
     if (dragged.current) {
       dragged.current = false
@@ -801,32 +894,67 @@ function useLayerInteract(
       listening: interactive,
       draggable: movable,
       dragDistance: 2,
+      /**
+       * 拦截图层按下事件，移动图层时暂停舞台拖动。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onMouseDown: (event: Konva.KonvaEventObject<MouseEvent>) => {
         event.cancelBubble = true
         if (movable) event.target.getStage()?.draggable(false)
       },
+      /**
+       * 未发生图层拖动时恢复舞台交互。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onMouseUp: (event: Konva.KonvaEventObject<MouseEvent>) => {
         if (!dragged.current) restoreStage(event.target)
       },
+      /**
+       * 在图层可移动时切换为移动光标。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onMouseEnter: (event: Konva.KonvaEventObject<MouseEvent>) => {
         const container = event.target.getStage()?.container()
         if (container && movable) container.style.cursor = 'move'
       },
+      /**
+       * 离开图层后恢复默认光标。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onMouseLeave: (event: Konva.KonvaEventObject<MouseEvent>) => {
         const container = event.target.getStage()?.container()
         if (container) container.style.cursor = ''
       },
       onClick: pick,
       onTap: pick,
+      /**
+       * 标记图层拖动开始，避免同时拖动舞台。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onDragStart: (event: Konva.KonvaEventObject<DragEvent>) => {
         event.cancelBubble = true
         dragged.current = true
         event.target.getStage()?.draggable(false)
         onHoldStage?.(true)
       },
+      /**
+       * 阻止图层拖动事件继续影响舞台。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onDragMove: (event: Konva.KonvaEventObject<DragEvent>) => {
         event.cancelBubble = true
       },
+      /**
+       * 恢复舞台拖动并保留落点预览，等待服务端位置回写。
+       *
+       * @param event 当前浏览器或画布交互事件。
+       */
       onDragEnd: (event: Konva.KonvaEventObject<DragEvent>) => {
         event.cancelBubble = true
         restoreStage(event.target)
@@ -921,6 +1049,12 @@ function CompareDivider({
   scale: number
   onChange: (value: number) => void
 }) {
+  /**
+   * 更新舞台容器的鼠标样式。
+   *
+   * @param node 与图层绑定的 Konva 节点。
+   * @param shape 舞台容器使用的光标样式。
+   */
   const cursor = (node: Konva.Node, shape: string) => {
     const container = node.getStage()?.container()
     if (container) container.style.cursor = shape
@@ -995,6 +1129,12 @@ function CropLayer({
   }, [rect])
 
   // 夹取后的值可能与上一帧相同，此时不会触发重渲染，得手动把节点摆回边界内
+  /**
+   * 限制裁剪框在画布内，将有效矩形回传并返回。
+   *
+   * @param next 本次准备应用的新值。
+   * @returns
+   */
   const commit = (next: CropRect) => {
     const clamped = clampRect(next, canvas)
     onChange(clamped)
@@ -1075,6 +1215,13 @@ function CropLayer({
   )
 }
 
+/**
+ * 限制裁剪框尺寸及位置，使其不超出原始画布。
+ *
+ * @param rect 原始画布像素坐标中的矩形。
+ * @param canvas 原始画布文档或像素尺寸。
+ * @returns
+ */
 function clampRect(rect: CropRect, canvas: LayerDocument): CropRect {
   const width = Math.min(rect.width, canvas.width)
   const height = Math.min(rect.height, canvas.height)

@@ -16,6 +16,11 @@ export default function CreatePage() {
   const generate = useGenerate()
   const createSession = useCreateSession()
 
+  /**
+   * 以选中的素材建立会话并进入编辑器。
+   *
+   * @param assetId 用于创建编辑会话的素材标识。
+   */
   const openEditor = (assetId: string) =>
     createSession.mutate(
       { current_asset_id: assetId },
@@ -31,6 +36,11 @@ export default function CreatePage() {
         pending={generate.isPending}
         onSubmit={(input) =>
           generate.mutate(input, {
+            /**
+             * 请求成功后同步关联状态并执行后续界面操作。
+             *
+             * @param run 关联的后台任务或提示动作。
+             */
             onSuccess: (run) => {
               savePromptDraft('')
               navigate(`/candidates/${run.id}`)
