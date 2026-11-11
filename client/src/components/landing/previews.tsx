@@ -4,7 +4,7 @@
  */
 
 const TILES = [
-  'bg-[linear-gradient(145deg,#dbe9ee,#f4f6f3)]',
+  'bg-[linear-gradient(145deg,#dfe9dc,#f4f6f3)]',
   'bg-[linear-gradient(145deg,#e7f0d4,#f4f6f3)]',
   'bg-[linear-gradient(145deg,#f0e3d3,#f4f6f3)]',
   'bg-[linear-gradient(145deg,#e0e5dd,#f4f6f3)]',
@@ -39,7 +39,7 @@ export function CandidatesPreview() {
 export function SelectionPreview() {
   return (
     <div
-      className="border-line relative aspect-[4/3] h-full max-h-full w-auto overflow-hidden rounded-[13px] border bg-[linear-gradient(160deg,#e4eef1,#f4f6f3)]"
+      className="border-line relative aspect-[4/3] h-full max-h-full w-auto overflow-hidden rounded-[13px] border bg-[linear-gradient(160deg,#e4ece0,#f4f6f3)]"
       aria-hidden
     >
       <div className="border-brand absolute top-[18%] left-[22%] h-[54%] w-[38%] rounded-[6px] border-2 border-dashed">
@@ -95,7 +95,7 @@ export function ExportsPreview() {
       {RATIOS.map((ratio) => (
         <div key={ratio.label} className="flex flex-col items-center gap-1.5">
           <div
-            className={`border-line grid place-items-center rounded-[9px] border bg-[linear-gradient(150deg,#e4eef1,#f4f6f3)] ${ratio.frame}`}
+            className={`border-line grid place-items-center rounded-[9px] border bg-[linear-gradient(150deg,#e4ece0,#f4f6f3)] ${ratio.frame}`}
           >
             <span className="bg-scrim/15 h-2/5 w-1/3 rounded-[3px]" />
           </div>

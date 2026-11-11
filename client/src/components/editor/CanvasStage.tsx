@@ -606,7 +606,7 @@ function TextLayer({
         onSelect?.(layer.id)
         onEdit?.(layer.id)
       }}
-      stroke={selected && interactive && !editing ? '#5f98ad' : undefined}
+      stroke={selected && interactive && !editing ? '#64866c' : undefined}
       strokeWidth={selected && interactive && !editing ? 2 : 0}
       strokeScaleEnabled={false}
     />
@@ -749,7 +749,7 @@ function ImageLayer({
       opacity={preview?.opacity ?? layer.opacity}
       filters={filters}
       {...drag.handlers}
-      stroke={selected && interactive ? '#5f98ad' : undefined}
+      stroke={selected && interactive ? '#64866c' : undefined}
       strokeWidth={selected && interactive ? 2 : 0}
       strokeScaleEnabled={false}
     />
@@ -1012,8 +1012,8 @@ function LayerScaler({
       anchorCornerRadius={3 * invert}
       anchorStrokeWidth={1.5 * invert}
       borderStrokeWidth={invert}
-      anchorStroke="#427f95"
-      borderStroke="#5f98ad"
+      anchorStroke="#44664c"
+      borderStroke="#64866c"
       boundBoxFunc={(oldBox, newBox) => {
         const min = MIN_LAYER_SCALE * Math.min(layer.width, layer.height)
         const max = MAX_LAYER_SCALE * Math.max(layer.width, layer.height)
@@ -1170,7 +1170,7 @@ function CropLayer({
         y={rect.y}
         width={rect.width}
         height={rect.height}
-        stroke="#5f98ad"
+        stroke="#64866c"
         strokeWidth={2}
         strokeScaleEnabled={false}
         dash={[7 * invert, 5 * invert]}
@@ -1205,8 +1205,8 @@ function CropLayer({
         anchorCornerRadius={3 * invert}
         anchorStrokeWidth={1.5 * invert}
         borderStrokeWidth={invert}
-        anchorStroke="#427f95"
-        borderStroke="#5f98ad"
+        anchorStroke="#44664c"
+        borderStroke="#64866c"
         boundBoxFunc={(oldBox, newBox) =>
           newBox.width < 32 || newBox.height < 32 ? oldBox : newBox
         }
