@@ -152,14 +152,24 @@ docker compose --profile deploy up -d
 ## 🗂️ 项目结构
 
 ```text
-backend/app/
-  agent/       LangGraph Agent：规划、图编排、LLM 接入
-  edits/       图像编辑管线：抠图、OCR、分割、渲染、像素处理
-  tools/       统一工具注册表（UI 与 Agent 共用）
-  providers/   模型抽象层：Mock / DashScope 可切换
-  routers/     REST API：认证、会话、资产、批次、事件
-  worker.py    ARQ 异步任务 Worker
-  eval/        评测脚本与数据集
+backend/
+├── app/             后端应用代码
+│   ├── routers/     HTTP 接口路由
+│   ├── schemas/     请求和响应的数据结构
+│   ├── services/    业务逻辑
+│   ├── models/      数据库模型
+│   ├── tools/       编辑工具的参数、注册和执行实现
+│   ├── edits/       图层、像素、遮罩等底层处理
+│   ├── agent/       自然语言指令转工具计划
+│   ├── providers/   外部 AI 图像服务的适配
+│   ├── tasks/       worker 可以执行的队列任务
+│   └── eval/        图像处理效果评测
+├── migrations/      数据库结构变更记录
+├── tests/           自动化测试
+├── scripts/         独立验证脚本
+├── pyproject.toml   项目依赖和工具配置
+├── uv.lock          锁定依赖版本
+└── alembic.ini      数据库迁移工具配置
 
 client/src/
   pages/       落地页、登录、创作（文生图）、候选图、编辑器、批量处理
