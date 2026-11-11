@@ -1,3 +1,4 @@
+import { Button, TextArea } from '@heroui/react'
 import type { RefObject } from 'react'
 
 function AttachIcon() {
@@ -47,7 +48,7 @@ export default function PromptComposer({
       }}
       className="border-line bg-paper shadow-panel rounded-panel focus-within:border-brand relative border p-2 text-left transition-colors"
     >
-      <textarea
+      <TextArea
         ref={inputRef}
         rows={3}
         value={value}
@@ -60,28 +61,29 @@ export default function PromptComposer({
         }}
         placeholder={placeholder}
         aria-label="描述你想要的商品物料"
-        className="text-ink placeholder:text-faint w-full resize-none bg-transparent px-4 pt-3 pb-1 text-[15px] leading-relaxed outline-none"
+        className="app-field-inline text-ink placeholder:text-faint w-full resize-none bg-transparent px-4 pt-3 pb-1 text-[15px] leading-relaxed outline-none"
       />
 
       <div className="flex items-center justify-between gap-3 px-2 pb-1">
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={onAttach}
-          className="text-muted hover:border-line-strong hover:text-ink border-line rounded-control flex items-center gap-1.5 border px-2.5 py-1.5 text-xs font-medium transition-colors"
+          className="app-button text-muted hover:border-line-strong hover:text-ink border-line rounded-control flex items-center gap-1.5 border px-2.5 py-1.5 text-xs font-medium transition-colors"
         >
           <AttachIcon />
           上传商品图
-        </button>
+        </Button>
 
         <div className="flex items-center gap-3">
           <span className="text-faint hidden text-xs sm:block">Enter 发送 · Shift + Enter 换行</span>
-          <button
+          <Button
             type="submit"
-            className="bg-ink hover:bg-dark rounded-control flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white transition-colors"
+            className="app-button bg-ink hover:bg-dark rounded-control flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white transition-colors"
           >
             {submitLabel}
             <SubmitIcon />
-          </button>
+          </Button>
         </div>
       </div>
     </form>

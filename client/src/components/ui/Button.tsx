@@ -1,3 +1,4 @@
+import { Button as HeroButton } from '@heroui/react'
 import type { ReactNode } from 'react'
 
 import { buttonClass, type ButtonLook } from '@/components/ui/buttonStyles'
@@ -29,14 +30,22 @@ export default function Button({
   const filled = Math.max(0, Math.min(100, progress ?? 0))
 
   return (
-    <button
+    <HeroButton
       type="button"
       onClick={onClick}
-      disabled={disabled}
-      title={title}
+      isDisabled={disabled}
+      variant="ghost"
+      ref={(element) => {
+        if (title) element?.setAttribute('title', title)
+        else element?.removeAttribute('title')
+      }}
       aria-pressed={active}
       aria-busy={running || undefined}
-      className={[buttonClass({ variant, size, active: active || running, block }), className]
+      className={[
+        'app-button',
+        buttonClass({ variant, size, active: active || running, block }),
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
     >
@@ -54,6 +63,6 @@ export default function Button({
           style={{ width: `${Math.max(filled, 4)}%` }}
         />
       )}
-    </button>
+    </HeroButton>
   )
 }

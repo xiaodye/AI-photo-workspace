@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react'
 import { useState } from 'react'
 
 import Button from '@/components/ui/Button'
@@ -27,7 +28,7 @@ export default function MessageComposer({
 
   return (
     <div className="border-line shrink-0 border-t p-3">
-      <textarea
+      <TextArea
         rows={2}
         value={text}
         onChange={(event) => setText(event.target.value)}

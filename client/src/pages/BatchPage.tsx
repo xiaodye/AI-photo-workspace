@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -331,7 +332,7 @@ function Pipeline({
                 </span>
               </label>
               {on && step.id === 'replace_background' && (
-                <input
+                <Input
                   value={draft.prompt}
                   onChange={(event) => onChange({ ...draft, prompt: event.target.value })}
                   placeholder="例如：浅木色桌面，晨光"

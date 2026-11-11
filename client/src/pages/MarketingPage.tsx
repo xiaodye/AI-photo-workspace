@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react'
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -182,7 +183,7 @@ function Workspace({ sessionId }: { sessionId: string }) {
           title="四类营销图"
           hint="以当前画布为参考生成，结果进图片墙，不改画布。"
         />
-        <input
+        <Input
           value={copy}
           onChange={(event) => setCopy(event.target.value)}
           disabled={tools.busy}

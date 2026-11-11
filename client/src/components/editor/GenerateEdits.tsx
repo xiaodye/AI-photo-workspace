@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react'
 import { useState } from 'react'
 
 import type { Ratio } from '@/api/runs'
@@ -35,7 +36,7 @@ export function BackgroundForm({
           ? '写出新背景。已拆层，结果拍平成整图只进图片墙，点选采用；画布与图层保持不变。'
           : '写出新背景。一张直接上画布；多张进图片墙，点选采用。'}
       </p>
-      <textarea
+      <TextArea
         rows={3}
         value={prompt}
         disabled={disabled}
@@ -137,7 +138,7 @@ export function ReplaceForm({
       <p className="text-faint mb-2.5 text-[11px] leading-relaxed">
         只改当前选区。选区外的画面会保持不动。
       </p>
-      <textarea
+      <TextArea
         rows={3}
         value={prompt}
         disabled={disabled}
