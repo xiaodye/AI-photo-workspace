@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import BrandMark from '@/components/BrandMark'
 import ToastHost from '@/components/ToastHost'
@@ -41,11 +41,13 @@ export default function WorkbenchLayout() {
           data-account-open={accountMenuOpen}
           className="group border-line bg-paper absolute inset-y-0 left-0 flex w-16 flex-col overflow-hidden border-r py-4 transition-[width,box-shadow] duration-200 hover:w-52 hover:shadow-panel data-[account-open=true]:w-52 data-[account-open=true]:shadow-panel data-[account-open=true]:transition-none"
         >
-          <BrandMark size="sm" className="mb-6 px-5">
-            <span className="text-ink truncate text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
-              AI 修图智能体
-            </span>
-          </BrandMark>
+          <Link to="/" aria-label="返回落地页" title="返回落地页" className="mb-6 block px-5">
+            <BrandMark size="sm">
+              <span className="text-ink truncate text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
+                AI 修图智能体
+              </span>
+            </BrandMark>
+          </Link>
 
           <ul className="flex flex-1 flex-col gap-1 px-2">
             {NAV_ITEMS.map((item) => (
