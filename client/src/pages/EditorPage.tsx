@@ -24,13 +24,15 @@ export default function EditorPage() {
   return (
     // 编辑器自成一屏：不让工具条或画布把外层 main 撑出滚动条，否则画布会被滚出视口
     <div className="flex h-full overflow-hidden">
-      <SessionSidebar activeId={sessionId} />
       {sessionId ? (
         <Workspace sessionId={sessionId} />
       ) : (
-        <Notice title="选择一个会话" hint="从左侧打开历史对话，或回到创作页开始新的一张。">
-          <CreateLink />
-        </Notice>
+        <>
+          <SessionSidebar activeId={sessionId} />
+          <Notice title="选择一个会话" hint="从左侧打开历史对话，或回到创作页开始新的一张。">
+            <CreateLink />
+          </Notice>
+        </>
       )}
     </div>
   )
@@ -130,17 +132,23 @@ function Workspace({ sessionId }: { sessionId: string }) {
   ])
 
   if (!session) {
-    return isError ? (
-      <Notice title="会话不存在" hint="链接可能已失效，回到创作页新建一个。">
-        <CreateLink />
-      </Notice>
-    ) : (
-      <Notice title="加载中" hint="正在读取会话状态" />
+    return (
+      <>
+        <SessionSidebar activeId={sessionId} />
+        {isError ? (
+          <Notice title="会话不存在" hint="链接可能已失效，回到创作页新建一个。">
+            <CreateLink />
+          </Notice>
+        ) : (
+          <Notice title="加载中" hint="正在读取会话状态" />
+        )}
+      </>
     )
   }
 
   return (
     <>
+      <SessionSidebar activeId={sessionId} />
       <div className="flex min-w-0 flex-1 flex-col">
         <EditorToolbar
           session={session}
@@ -153,6 +161,12 @@ function Workspace({ sessionId }: { sessionId: string }) {
         )}
 
         <div className="relative flex min-h-0 min-w-0 flex-1">
+          <ImageWall
+            assets={session.assets}
+            currentId={session.current_asset_id}
+            disabled={patch.isPending || tools.busy}
+            onPick={(current_asset_id) => patch.mutate({ current_asset_id })}
+          />
           <div className="relative min-h-0 min-w-0 flex-1">
             <CanvasStage
               document={session.document}
@@ -190,13 +204,6 @@ function Workspace({ sessionId }: { sessionId: string }) {
             </div>
           )}
         </div>
-
-        <ImageWall
-          assets={session.assets}
-          currentId={session.current_asset_id}
-          disabled={patch.isPending || tools.busy}
-          onPick={(current_asset_id) => patch.mutate({ current_asset_id })}
-        />
       </div>
     </>
   )

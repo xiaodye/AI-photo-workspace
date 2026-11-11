@@ -22,16 +22,25 @@ export default function ImageWall({
   disabled: boolean
   onPick: (assetId: string) => void
 }) {
+  const visibleAssets = assets.filter(
+    (asset) =>
+      asset.kind !== 'mask' &&
+      (asset.id === currentId || (asset.kind !== 'subject' && asset.kind !== 'background')),
+  )
+
+  if (visibleAssets.length === 0) return null
+
   return (
-    <div className="border-line bg-paper shrink-0 border-t">
-      <div className="scrollbar-slim flex scroll-px-4 items-center gap-2 overflow-x-auto px-4 py-3">
-        {assets
-          .filter((asset) => asset.kind !== 'mask')
-          .filter(
-            (asset) =>
-              asset.id === currentId || (asset.kind !== 'subject' && asset.kind !== 'background'),
-          )
-          .map((asset) => {
+    <aside
+      aria-label="会话图片"
+      className="border-line bg-paper flex min-h-0 w-52 shrink-0 flex-col border-r"
+    >
+      <div className="border-line text-muted flex h-14 shrink-0 items-center justify-between border-b px-3 text-xs">
+        <span className="font-medium">图片素材</span>
+        <span className="text-faint tabular-nums">{visibleAssets.length}</span>
+      </div>
+      <div className="scrollbar-slim grid min-h-0 grid-cols-2 content-start gap-2 overflow-y-auto p-3">
+        {visibleAssets.map((asset) => {
           const active = asset.id === currentId
           return (
             <button
@@ -44,7 +53,7 @@ export default function ImageWall({
                   ? `当前画布 · ${KIND_LABELS[asset.kind]}`
                   : `采用这张 · ${KIND_LABELS[asset.kind]} ${asset.width}×${asset.height}`
               }
-              className={`bg-canvas group rounded-chip relative size-16 shrink-0 overflow-hidden border-2 transition-all duration-150 disabled:cursor-default ${
+              className={`bg-canvas group rounded-chip relative aspect-square w-full overflow-hidden border-2 transition-all duration-150 disabled:cursor-default ${
                 active
                   ? 'border-brand shadow-control'
                   : 'border-line hover:border-brand hover:shadow-control active:scale-[0.97]'
@@ -63,6 +72,6 @@ export default function ImageWall({
           )
         })}
       </div>
-    </div>
+    </aside>
   )
 }
