@@ -9,11 +9,20 @@ export type BatchTool =
   | 'prepare_delivery_sizes'
 
 export type BatchOp = {
+  /** 服务端注册的工具名称。 */
   tool: BatchTool
+  /** 提交给服务端工具的参数。 */
   params: Record<string, unknown>
 }
 
-export const BATCH_STEPS: { id: BatchTool; label: string; hint: string }[] = [
+export const BATCH_STEPS: {
+  /** 当前记录的唯一标识。 */
+  id: BatchTool;
+  /** 界面展示文案。 */
+  label: string;
+  /** 辅助说明或操作提示。 */
+  hint: string
+}[] = [
   { id: 'remove_background', label: '去背景', hint: '去掉背景，保留主体' },
   { id: 'replace_background', label: '换背景', hint: '按描述替换背景' },
   { id: 'adjust_image', label: '调色', hint: '亮度、对比度、饱和度' },
@@ -25,14 +34,23 @@ export const BATCH_STEPS: { id: BatchTool; label: string; hint: string }[] = [
 export const EXPAND_RATIOS: Ratio[] = ['1:1', '4:5', '9:16', '16:9']
 
 export type BatchDraft = {
+  /** 当前选中的值或是否已选中。 */
   selected: BatchTool[]
+  /** 生成或处理图片的正向描述。 */
   prompt: string
+  /** 亮度调节量，零表示不调整。 */
   brightness: number
+  /** 对比度调节量，零表示不调整。 */
   contrast: number
+  /** 饱和度调节量，零表示不调整。 */
   saturation: number
+  /** 相对原始尺寸的缩放倍率。 */
   scale: 2 | 4
+  /** 扩图步骤使用的目标比例。 */
   expandRatio: Ratio
+  /** 需要准备的投放比例。 */
   delivery: Ratio[]
+  /** 需要导出的图片编码格式。 */
   formats: Array<'png' | 'jpg'>
 }
 
@@ -48,6 +66,12 @@ export const EMPTY_DRAFT: BatchDraft = {
   formats: ['png'],
 }
 
+/**
+ * 按所选步骤顺序将批处理草稿转换为服务端工具参数。
+ *
+ * @param draft 尚未提交的表单或笔刷草稿。
+ * @returns
+ */
 export function operationsOf(draft: BatchDraft): BatchOp[] {
   return draft.selected.map((tool) => {
     if (tool === 'replace_background') return { tool, params: { prompt: draft.prompt.trim() } }
@@ -68,6 +92,13 @@ export function operationsOf(draft: BatchDraft): BatchOp[] {
   })
 }
 
+/**
+ * 检查批处理所需素材与配置，返回首个阻塞原因。
+ *
+ * @param draft 尚未提交的表单或笔刷草稿。
+ * @param assetCount 本次批处理的素材数量。
+ * @returns
+ */
 export function draftReady(draft: BatchDraft, assetCount: number): string | null {
   if (assetCount === 0) return '先选至少一张图'
   if (draft.selected.length === 0) return '先勾选至少一步处理'

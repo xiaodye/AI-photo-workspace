@@ -29,13 +29,21 @@ const ON: Record<ButtonVariant, string> = {
 }
 
 export type ButtonLook = {
+  /** 控件的视觉变体。 */
   variant?: ButtonVariant
+  /** 控件尺寸档位或展示尺寸。 */
   size?: ButtonSize
+  /** 是否展示当前激活状态。 */
   active?: boolean
+  /** 是否占满父容器宽度。 */
   block?: boolean
 }
 
-/** 供 Link 等非 button 元素复用同一套手感。 */
+/**
+ * 供 Link 等非 button 元素复用同一套手感。
+ *
+ * @returns
+ */
 export function buttonClass({ variant = 'ghost', size = 'md', active, block }: ButtonLook = {}) {
   return [
     BASE,

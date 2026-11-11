@@ -37,6 +37,11 @@ function Compose() {
   const [draft, setDraft] = useState<BatchDraft>(EMPTY_DRAFT)
   const blocked = draftReady(draft, assets.length)
 
+  /**
+   * 将素材加入批处理列表，去重并限制数量。
+   *
+   * @param asset 当前展示或操作的素材。
+   */
   const add = (asset: Asset) =>
     setAssets((current) =>
       current.some((item) => item.id === asset.id) || current.length >= MAX_IMAGES
@@ -44,6 +49,9 @@ function Compose() {
         : [...current, asset],
     )
 
+  /**
+   * 在配置满足条件后创建批处理任务并跳转到观察页。
+   */
   const start = () => {
     if (blocked) return
     create.mutate(
@@ -159,8 +167,14 @@ function Watch({ runId }: { runId: string }) {
   const done = live.status && isTerminal(live.status)
   const succeeded = data?.items.filter((item) => item.status === 'succeeded').length ?? 0
 
+  /**
+   * 下载批处理压缩包，并在触发保存后释放临时地址。
+   */
   const download = () =>
     pack.mutate(undefined, {
+      /**
+       * 请求成功后同步关联状态并执行后续界面操作。
+       */
       onSuccess: ({ blob, filename }) => {
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
@@ -260,6 +274,11 @@ function Pipeline({
   draft: BatchDraft
   onChange: (draft: BatchDraft) => void
 }) {
+  /**
+   * 切换批处理步骤的选中状态。
+   *
+   * @param id 当前记录的唯一标识。
+   */
   const toggle = (id: BatchTool) => {
     const selected = draft.selected.includes(id)
       ? draft.selected.filter((item) => item !== id)
@@ -267,6 +286,11 @@ function Pipeline({
     onChange({ ...draft, selected })
   }
 
+  /**
+   * 切换导出格式的选中状态。
+   *
+   * @param fmt 需要切换选中状态的导出格式。
+   */
   const toggleFormat = (fmt: 'png' | 'jpg') => {
     const formats = draft.formats.includes(fmt)
       ? draft.formats.filter((item) => item !== fmt)
@@ -274,6 +298,11 @@ function Pipeline({
     onChange({ ...draft, formats })
   }
 
+  /**
+   * 切换需要准备的投放比例。
+   *
+   * @param ratio 目标画幅比例。
+   */
   const toggleDelivery = (ratio: '1:1' | '4:5' | '9:16') => {
     const delivery = draft.delivery.includes(ratio)
       ? draft.delivery.filter((item) => item !== ratio)
@@ -427,6 +456,12 @@ function Slider({
   )
 }
 
+/**
+ * 将批处理状态转换为界面文案，未知状态按等待中展示。
+ *
+ * @param status 待判断的任务状态。
+ * @returns
+ */
 function statusLabel(status: string) {
   if (status === 'succeeded') return '已完成'
   if (status === 'failed') return '失败'

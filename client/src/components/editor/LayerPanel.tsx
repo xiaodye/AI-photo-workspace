@@ -301,6 +301,12 @@ function EyeIcon({ open }: { open: boolean }) {
 const TEXT_FIELD =
   'border-line text-ink placeholder:text-faint rounded-control focus:border-line-strong w-full resize-none border px-2.5 py-1.5 text-xs leading-relaxed outline-none'
 
+/**
+ * 将可识别的颜色归一化为颜色输入框所需的六位十六进制值。
+ *
+ * @param value 当前受控值。
+ * @returns
+ */
 function toHex6(value: string) {
   const raw = value.replace('#', '')
   if (raw.length === 3) return `#${[...raw].map((ch) => ch + ch).join('')}`
@@ -333,6 +339,11 @@ function TextForm({
     fill: toHex6(layer.fill ?? '#141414'),
   }
 
+  /**
+   * 仅在文字内容、字号或填充颜色变化时提交图层属性。
+   *
+   * @param next 本次准备应用的新值。
+   */
   const commit = (next: { text: string; font_size: number; fill: string }) => {
     if (
       next.text === current.text &&
@@ -517,6 +528,9 @@ function AdjustForm({
 
   useEffect(() => () => setAdjustPreview(null), [setAdjustPreview])
 
+  /**
+   * 将调色草稿和画布临时预览恢复到未调整状态。
+   */
   const clear = () => {
     setValues({})
     setAdjustPreview(null)
@@ -594,6 +608,9 @@ function SliderField({
 }) {
   const [draft, setDraft] = useState<number | null>(null)
 
+  /**
+   * 仅提交与当前文档不同的属性值，并结算临时预览。
+   */
   const commit = () => {
     if (draft !== null && draft !== value) onCommit(draft)
     setDraft(null)

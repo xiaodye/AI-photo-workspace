@@ -39,6 +39,11 @@ export default function LandingHero({
   const [prompt, setPrompt] = useState(initialPrompt)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
+  /**
+   * 将预设场景描述填入需求框并聚焦，便于继续修改。
+   *
+   * @param text 预设场景对应的提示词。
+   */
   const pick = (text: string) => {
     setPrompt(text)
     inputRef.current?.focus()

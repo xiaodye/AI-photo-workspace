@@ -16,6 +16,8 @@ const EPSILON = 0.4
  * 服务端进度是几个离散台阶，长等待期间不上报。这里按工具预估耗时铺成连续值。
  *
  * 展示进度只增不减：只有换任务（token 变化）才归零，失败或取消时停在原处。
+ *
+ * @returns
  */
 export function useSmoothedProgress({
   reported,
@@ -23,9 +25,13 @@ export function useSmoothedProgress({
   tool,
   token,
 }: {
+  /** 服务端上报的原始百分比。 */
   reported: number
+  /** 服务端返回的执行状态。 */
   status: RunStatus | undefined
+  /** 服务端注册的工具名称。 */
   tool: string | undefined
+  /** 当前任务标识，变化时重置展示进度。 */
   token: string | null
 }) {
   const [shown, setShown] = useState(0)
@@ -51,6 +57,11 @@ export function useSmoothedProgress({
     let frame = 0
     let last = performance.now()
 
+    /**
+     * 按帧缓动追赶目标进度，完成后收束到 100。
+     *
+     * @param now 动画帧时间戳，单位为毫秒。
+     */
     const tick = (now: number) => {
       const dt = Math.min(0.25, (now - last) / 1000)
       last = now

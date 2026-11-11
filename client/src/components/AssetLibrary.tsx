@@ -37,6 +37,9 @@ function LibraryGroupCard({
   onOpenAsset: (assetId: string) => void
 }) {
   const [open, setOpen] = useState(false)
+  /**
+   * 优先打开素材所属会话，否则回传封面素材。
+   */
   const openGroup = () => {
     if (group.session_id) onOpenSession(group.session_id)
     else onOpenAsset(group.cover.id)

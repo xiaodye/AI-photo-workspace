@@ -14,13 +14,36 @@ import { offersUndo, toolLabel } from '@/lib/tools'
 import { toast } from '@/stores/toasts'
 
 const LIST_KEY = ['sessions']
+/**
+ * 构造会话详情缓存键。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 const detailKey = (id: string) => ['session', id]
+/**
+ * 构造会话历史缓存键，与详情查询区分。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 const historyKey = (id: string) => ['session', id, 'history']
 
+/**
+ * 读取当前用户的会话列表。
+ *
+ * @returns
+ */
 export function useSessions() {
   return useQuery({ queryKey: LIST_KEY, queryFn: sessionsApi.list })
 }
 
+/**
+ * 按标识查询会话详情，未选择会话时不发送请求。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 export function useSession(id: string | null) {
   return useQuery({
     queryKey: detailKey(id ?? ''),
@@ -29,6 +52,12 @@ export function useSession(id: string | null) {
   })
 }
 
+/**
+ * 按会话查询操作历史，未选择会话时不发送请求。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 export function useSessionHistory(id: string | null) {
   return useQuery({
     queryKey: historyKey(id ?? ''),
@@ -37,6 +66,12 @@ export function useSessionHistory(id: string | null) {
   })
 }
 
+/**
+ * 返回会话回写回调，同步详情并刷新列表与历史。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 function useCacheSession(id: string) {
   const queryClient = useQueryClient()
   return (detail: SessionDetail) => {
@@ -46,10 +81,20 @@ function useCacheSession(id: string) {
   }
 }
 
+/**
+ * 创建会话并将返回详情写入缓存。
+ *
+ * @returns
+ */
 export function useCreateSession() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: SessionCreateInput) => sessionsApi.create(input),
+    /**
+     * 将新会话详情写入缓存，并刷新会话列表。
+     *
+     * @param detail 服务端返回的新会话详情。
+     */
     onSuccess: (detail) => {
       queryClient.setQueryData(detailKey(detail.id), detail)
       void queryClient.invalidateQueries({ queryKey: LIST_KEY })
@@ -57,6 +102,12 @@ export function useCreateSession() {
   })
 }
 
+/**
+ * 更新会话元数据或当前素材，并同步相关缓存。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 export function usePatchSession(id: string) {
   const cache = useCacheSession(id)
   return useMutation({
@@ -65,6 +116,12 @@ export function usePatchSession(id: string) {
   })
 }
 
+/**
+ * 按选中素材打包会话资源，失败时展示统一提示。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 export function useExportPack(id: string) {
   return useMutation({
     mutationFn: (assetIds: string[]) => sessionsApi.export(id, assetIds),
@@ -72,6 +129,12 @@ export function useExportPack(id: string) {
   })
 }
 
+/**
+ * 协调工具调用、后台任务进度及带互斥锁的画布撤销重做。
+ *
+ * @param id 当前记录的唯一标识。
+ * @returns
+ */
 export function useSessionTools(id: string) {
   const queryClient = useQueryClient()
   const cache = useCacheSession(id)
@@ -79,8 +142,18 @@ export function useSessionTools(id: string) {
   const live = useRun(pendingRunId)
 
   const invoke = useMutation({
-    mutationFn: ({ tool, params }: { tool: string; params?: Record<string, unknown> }) =>
+    mutationFn: ({ tool, params }: {
+      /** 服务端注册的工具名称。 */
+      tool: string;
+      /** 提交给服务端工具的参数。 */
+      params?: Record<string, unknown>
+    }) =>
       sessionsApi.invoke(id, tool, params),
+    /**
+     * 回写工具响应中的会话文档，并订阅尚未结束的后台任务。
+     *
+     * @param body 工具调用返回的会话详情与任务。
+     */
     onSuccess: (body) => {
       cache(body.session)
       if (!isTerminal(body.run.status)) setPendingRunId(body.run.id)
@@ -89,6 +162,9 @@ export function useSessionTools(id: string) {
   })
 
   const historyLock = useRef(false)
+  /**
+   * 在历史操作结束后释放锁，允许下一次撤销或重做。
+   */
   const unlockHistory = () => {
     historyLock.current = false
   }
@@ -139,6 +215,10 @@ export function useSessionTools(id: string) {
   /**
    * 当前在跑的是不是这一次调用。工具层同时只跑一个任务，界面据此只给发起的那个按钮
    * 换进度文案，其余按钮虽然一样禁用，但不会看起来像是也在生成。
+   *
+   * @param tool 服务端注册的工具名称。
+   * @param match 进一步匹配工具参数的可选条件。
+   * @returns
    */
   const isRunning = (tool: string, match?: (params: Record<string, unknown>) => boolean) => {
     const pending = invoke.isPending || waiting ? invoke.variables : undefined
@@ -146,6 +226,11 @@ export function useSessionTools(id: string) {
     return match ? match(pending.params ?? {}) : true
   }
 
+  /**
+   * 在未忙碌且未加锁时执行历史操作，阻止连续按键重入。
+   *
+   * @param action 需要执行的历史操作。
+   */
   const runHistory = (action: () => void) => {
     if (historyLock.current || busy) return
     historyLock.current = true
@@ -153,8 +238,20 @@ export function useSessionTools(id: string) {
   }
 
   return {
+    /**
+     * 提交当前会话的工具调用。
+     *
+     * @param tool 服务端注册的工具名称。
+     * @param params 提交给服务端工具的参数。
+     */
     invoke: (tool: string, params?: Record<string, unknown>) => invoke.mutate({ tool, params }),
+    /**
+     * 在互斥锁保护下请求服务端撤销画布文档操作。
+     */
     undo: () => runHistory(() => undo.mutate()),
+    /**
+     * 在互斥锁保护下请求服务端重做画布文档操作。
+     */
     redo: () => runHistory(() => redo.mutate()),
     busy,
     isRunning,
