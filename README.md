@@ -8,6 +8,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
+[![HeroUI](https://img.shields.io/badge/HeroUI-000000?style=flat&logo=heroui&logoColor=white)](https://www.heroui.com)
 [![Konva](https://img.shields.io/badge/Konva-Canvas-F26101?style=flat&logo=konva&logoColor=white)](https://konvajs.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=flat&logo=reactquery&logoColor=white)](https://tanstack.com/query)
