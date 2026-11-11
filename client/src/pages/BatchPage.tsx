@@ -1,4 +1,4 @@
-import { Input } from '@heroui/react'
+import { Checkbox, Input } from '@heroui/react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -319,18 +319,17 @@ function Pipeline({
           const on = draft.selected.includes(step.id)
           return (
             <li key={step.id} className="border-line bg-paper rounded-[16px] border p-4">
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={on}
-                  onChange={() => toggle(step.id)}
-                  className="mt-0.5"
-                />
-                <span>
-                  <span className="text-ink block text-sm font-medium">{step.label}</span>
-                  <span className="text-faint block text-xs">{step.hint}</span>
-                </span>
-              </label>
+              <Checkbox isSelected={on} onChange={() => toggle(step.id)}>
+                <Checkbox.Content className="items-start gap-3">
+                  <Checkbox.Control className="mt-0.5">
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <span>
+                    <span className="text-ink block text-sm font-medium">{step.label}</span>
+                    <span className="text-faint block text-xs font-normal">{step.hint}</span>
+                  </span>
+                </Checkbox.Content>
+              </Checkbox>
               {on && step.id === 'replace_background' && (
                 <Input
                   value={draft.prompt}
@@ -418,14 +417,18 @@ function Pipeline({
       <div className="mt-4 flex items-center gap-3">
         <span className="text-muted text-xs">导出格式</span>
         {(['png', 'jpg'] as const).map((fmt) => (
-          <label key={fmt} className="text-ink flex items-center gap-1.5 text-xs">
-            <input
-              type="checkbox"
-              checked={draft.formats.includes(fmt)}
-              onChange={() => toggleFormat(fmt)}
-            />
-            {fmt.toUpperCase()}
-          </label>
+          <Checkbox
+            key={fmt}
+            isSelected={draft.formats.includes(fmt)}
+            onChange={() => toggleFormat(fmt)}
+          >
+            <Checkbox.Content className="text-ink gap-1.5 text-xs font-normal">
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              {fmt.toUpperCase()}
+            </Checkbox.Content>
+          </Checkbox>
         ))}
       </div>
     </section>

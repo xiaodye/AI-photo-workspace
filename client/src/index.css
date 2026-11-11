@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import '@heroui/styles/themes/default';
 @import '@heroui/styles/components/button.css' layer(components);
+@import '@heroui/styles/components/checkbox.css' layer(components);
 @import '@heroui/styles/components/input.css' layer(components);
 @import '@heroui/styles/components/textarea.css' layer(components);
 @import '@heroui/styles/components/progress-bar.css' layer(components);
