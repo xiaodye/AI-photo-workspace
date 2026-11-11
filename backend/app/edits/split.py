@@ -21,6 +21,7 @@ class EmptyCut(Exception):
 
 
 def mask_hash(mask: bytes) -> str:
+    """计算选区像素指纹，用于识别重复拆出的对象。"""
     return hashlib.sha256(to_luma(mask).tobytes()).hexdigest()[:16]
 
 

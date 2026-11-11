@@ -10,6 +10,7 @@ from app.config import get_settings
 
 @lru_cache
 def _client(endpoint: str | None = None):
+    """获取并缓存指定存储地址的 S3 客户端。"""
     settings = get_settings()
     return boto3.client(
         "s3",

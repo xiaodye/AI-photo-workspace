@@ -17,12 +17,21 @@ class ImageRejected(Exception):
 
 @dataclass(frozen=True)
 class ImageMeta:
+    """图片解码后的格式、尺寸及文件信息。"""
+
+    # 图片编码格式。
     image_format: str
+    # 图片的 MIME 类型。
     content_type: str
+    # 与图片编码格式对应的文件扩展名。
     extension: str
+    # 图片宽度，单位为像素。
     width: int
+    # 图片高度，单位为像素。
     height: int
+    # 图片文件大小，单位为字节。
     size_bytes: int
+    # 图片是否包含透明通道。
     has_alpha: bool
 
 

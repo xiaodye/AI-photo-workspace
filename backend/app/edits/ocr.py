@@ -8,10 +8,17 @@ from app.config import get_settings
 
 @dataclass(frozen=True)
 class TextBox:
+    """识别出的文字内容及其在图片中的边界框。"""
+
+    # 识别出的文字内容。
     text: str
+    # 文字框左边界的像素坐标。
     x: int
+    # 文字框上边界的像素坐标。
     y: int
+    # 文字框宽度，单位为像素。
     width: int
+    # 文字框高度，单位为像素。
     height: int
 
 

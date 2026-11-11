@@ -50,6 +50,7 @@ async def get(session: AsyncSession, run_id: uuid.UUID, user_id: uuid.UUID) -> T
 
 
 async def load(session: AsyncSession, run_id: uuid.UUID) -> ToolRun:
+    """按任务标识加载内部执行记录。"""
     run = await session.get(ToolRun, run_id)
     if run is None:
         raise RunNotFound
@@ -57,6 +58,7 @@ async def load(session: AsyncSession, run_id: uuid.UUID) -> ToolRun:
 
 
 async def _commit(session: AsyncSession, run: ToolRun) -> None:
+    """保存任务状态并发布实时进度事件。"""
     await session.commit()
     await events.publish(run.id, snapshot(run))
 
@@ -76,6 +78,7 @@ async def report(
     stage: str,
     result: dict | None = None,
 ) -> None:
+    """更新任务进度、阶段及中间结果。"""
     run.progress = max(run.progress, progress)
     run.stage = stage
     if result is not None:

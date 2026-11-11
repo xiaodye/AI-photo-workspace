@@ -27,6 +27,7 @@ class ToolRun(UUIDBase):
 
     __tablename__ = "tool_runs"
 
+    # 所属用户的标识。
     user_id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
@@ -34,13 +35,23 @@ class ToolRun(UUIDBase):
     session_id: Mapped[uuid.UUID | None] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("edit_sessions.id", ondelete="CASCADE"), default=None
     )
+    # 工具的注册名称。
     tool: Mapped[str] = mapped_column(String(48))
+    # 当前执行状态。
     status: Mapped[RunStatus] = mapped_column(enum_column(RunStatus), default=RunStatus.QUEUED)
+    # 任务完成进度，取值为 0～100。
     progress: Mapped[int] = mapped_column(default=0)
+    # 当前执行阶段的显示文本。
     stage: Mapped[str] = mapped_column(String(64), default="")
+    # 工具调用的参数。
     params: Mapped[dict] = mapped_column(JSONB, default=dict)
+    # 执行结果数据。
     result: Mapped[dict] = mapped_column(JSONB, default=dict)
+    # 执行失败的错误说明。
     error: Mapped[str | None] = mapped_column(Text, default=None)
+    # 任务已重试的次数。
     retries: Mapped[int] = mapped_column(default=0)
+    # 任务开始执行的时间。
     started_at: Mapped[datetime | None] = mapped_column(TIMESTAMPTZ, default=None)
+    # 任务结束的时间。
     finished_at: Mapped[datetime | None] = mapped_column(TIMESTAMPTZ, default=None)

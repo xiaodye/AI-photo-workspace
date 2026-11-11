@@ -29,9 +29,13 @@ def enum_column(enum_cls: type[enum.Enum]) -> Enum:
 
 
 class UUIDBase(Base):
+    """提供统一标识和创建时间的数据库模型基类。"""
+
     __abstract__ = True
 
+    # 唯一标识。
     id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
+    # 创建时间。
     created_at: Mapped[datetime] = mapped_column(TIMESTAMPTZ, server_default=func.now())

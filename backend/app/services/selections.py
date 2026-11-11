@@ -28,6 +28,7 @@ def _key(session_id: uuid.UUID) -> str:
 
 
 async def get(session_id: uuid.UUID, revision: int) -> dict | None:
+    """读取指定会话版本的选区记录。"""
     raw = await events.redis_client().get(_key(session_id))
     if not raw:
         return None
@@ -58,6 +59,7 @@ async def select_points(
     *,
     append: bool,
 ) -> dict:
+    """根据归一化点坐标生成并保存选区。"""
     _guard(record, revision)
     if not points:
         raise EmptySelection
@@ -80,6 +82,7 @@ async def select_strokes(
     strokes: list[list[tuple[float, float]]],
     radius: float,
 ) -> dict:
+    """将笔刷轨迹合并到当前选区并保存遮罩。"""
     _guard(record, revision)
     if not any(strokes):
         raise EmptySelection
@@ -106,6 +109,7 @@ async def _store(
     overlay: bytes,
     markers: list[dict],
 ) -> dict:
+    """保存遮罩素材及其会话版本、点选标记。"""
     asset = await assets.create_from_bytes(
         session, record.user_id, overlay, AssetKind.MASK, AssetSource.TOOL
     )

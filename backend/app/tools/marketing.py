@@ -40,21 +40,31 @@ _PROMPTS = {
 
 
 class GenerateMarketingIn(BaseModel):
+    """营销图片生成参数。"""
+
+    # 营销图片类型：商品主图、场景图、模特图或海报。
     kind: MarketingKind = Field(
         description="product 商品主图、scene 场景氛围图、model 模特上身、poster 促销海报"
     )
+    # 营销图片的海报文案或补充要求。
     caption: str | None = Field(default=None, max_length=200, description="海报文案或补充要求")
+    # 需要生成的图片数量。
     count: int = Field(default=1, ge=1, le=4)
+    # 输出图片的宽高比。
     ratio: Ratio = Field(default=Ratio.SQUARE, description="输出比例，默认 1:1")
 
 
 class PrepareDeliverySizesIn(BaseModel):
+    """投放尺寸图片生成参数。"""
+
+    # 需要生成的投放尺寸比例列表。
     ratios: list[Ratio] = Field(
         default_factory=lambda: list(DELIVERY_RATIOS),
         min_length=1,
         max_length=len(Ratio),
         description="要输出的投放比例。默认 1:1、4:5、9:16。主体不被裁切。",
     )
+    # 图片生成或编辑的提示词。
     prompt: str = Field(
         default="自然延伸画面边缘，保持主体完整，不要裁切商品",
         max_length=500,

@@ -40,10 +40,16 @@ _RECONSTRUCT = (
 
 
 class SplitLayersIn(BaseModel):
+    """画面拆层参数。"""
+
+    # 拆层时是否识别并提取文字图层。
     include_text: bool = False
 
 
 class PromoteIn(MaskRef):
+    """选区提升为独立图层的参数。"""
+
+    # 显示名称。
     name: str | None = Field(default=None, max_length=40)
 
 

@@ -15,13 +15,17 @@ class EditSession(UUIDBase):
 
     __tablename__ = "edit_sessions"
 
+    # 所属用户的标识。
     user_id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
+    # 编辑会话的显示标题。
     title: Mapped[str] = mapped_column(String(80))
+    # 创建会话时的原始素材标识。
     original_asset_id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("assets.id", ondelete="RESTRICT")
     )
+    # 当前采用的素材标识。
     current_asset_id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("assets.id", ondelete="RESTRICT")
     )
@@ -29,7 +33,9 @@ class EditSession(UUIDBase):
     revision: Mapped[int] = mapped_column(default=1)
     # 指向当前撤销位置；新操作会截断该序号之后的重做分支
     history_seq: Mapped[int] = mapped_column(default=1)
+    # 当前画布的图层文档。
     document: Mapped[dict] = mapped_column(JSONB, default=dict)
+    # 最近更新时间。
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMPTZ, server_default=func.now(), onupdate=func.now()
     )
@@ -40,9 +46,11 @@ class SessionAsset(Base):
 
     __tablename__ = "session_assets"
 
+    # 所属编辑会话的标识。
     session_id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("edit_sessions.id", ondelete="CASCADE"), primary_key=True
     )
+    # 关联素材的标识。
     asset_id: Mapped[uuid.UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("assets.id", ondelete="CASCADE"), primary_key=True
     )

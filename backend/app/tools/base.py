@@ -19,6 +19,7 @@ class UnknownTool(Exception):
 class LayerRef(BaseModel):
     """改哪一层。与选区正交：选区限定区域，layer_id 限定图层。"""
 
+    # 目标图层的标识或名称。
     layer_id: str | None = Field(
         default=None,
         description=(
@@ -31,7 +32,9 @@ class LayerRef(BaseModel):
 class MaskRef(BaseModel):
     """改哪块区域。两个字段都由服务端填入，不暴露给模型。"""
 
+    # 用于限定编辑区域的遮罩素材标识。
     mask_asset_id: str | None = None
+    # 画布修订号，用于校验选区与文档版本。
     revision: int | None = None
 
 
@@ -43,14 +46,21 @@ class ToolSpec:
     handler 只关心业务结果，状态流转由统一的执行外壳负责。
     """
 
+    # 工具的唯一注册名称。
     name: str
+    # 面向用户显示的名称。
     label: str
+    # 向 Agent 说明工具用途的描述。
     description: str
+    # 用于校验工具参数的数据模型类。
     params: type[BaseModel]
+    # 实际执行工具操作的异步函数。
     handler: ToolHandler
+    # 执行该工具是否需要用户确认。
     needs_approval: bool = False
     # 只改 LayerDocument 的工具当场执行；像素工具仍走队列
     queued: bool = True
+    # 调用工具是否需要编辑会话。
     session_required: bool = False
     # 素材 ID、随机种子这类参数应由服务端从上下文填入，不暴露给模型
     agent_hidden: tuple[str, ...] = field(default_factory=tuple)

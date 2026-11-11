@@ -21,10 +21,16 @@ from app.tools.target import (
 
 
 class RegionIn(LayerRef, MaskRef):
+    """选区消除与修复参数。"""
+
+    # 图片生成或编辑的提示词。
     prompt: str = Field(default="", max_length=500)
 
 
 class ReplaceRegionIn(LayerRef, MaskRef):
+    """选区内容替换参数。"""
+
+    # 图片生成或编辑的提示词。
     prompt: str = Field(min_length=1, max_length=500)
 
 

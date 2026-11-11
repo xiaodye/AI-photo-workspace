@@ -14,17 +14,29 @@ from app.tools.target import background_target, layer_image, write_layer_image
 
 
 class ReplaceBackgroundIn(BaseModel):
+    """背景替换参数。"""
+
+    # 图片生成或编辑的提示词。
     prompt: str = Field(min_length=1, max_length=500)
+    # 需要生成的图片数量。
     count: int = Field(default=1, ge=1, le=4)
+    # 需要避免生成内容的提示词。
     negative_prompt: str | None = None
 
 
 class ExpandCanvasIn(BaseModel):
+    """画布扩展参数。"""
+
+    # 输出图片的宽高比。
     ratio: Ratio
+    # 图片生成或编辑的提示词。
     prompt: str = Field(default="自然延伸画面边缘，保持主体完整", max_length=500)
 
 
 class UpscaleImageIn(BaseModel):
+    """图片放大参数。"""
+
+    # 输出图片相对于原图的放大倍数。
     scale: int = Field(default=2, ge=2, le=4)
 
 

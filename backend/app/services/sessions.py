@@ -30,6 +30,7 @@ def normalize_title(text: str | None) -> str:
 
 
 def snapshot(record: EditSession) -> dict:
+    """提取画布、当前素材及修订号的历史快照。"""
     return {
         "document": record.document,
         "current_asset_id": str(record.current_asset_id),
@@ -82,6 +83,7 @@ async def _max_seq(session: AsyncSession, record: EditSession) -> int:
 async def _append_history(
     session: AsyncSession, record: EditSession, action: str, params: dict, result: dict
 ) -> int:
+    """追加编辑历史并清理超出保留数量的旧记录。"""
     seq = record.history_seq + 1
     session.add(
         EditHistory(
@@ -348,6 +350,7 @@ async def _last_document_for(
 
 
 async def undo(session: AsyncSession, record: EditSession) -> EditSession:
+    """恢复上一次编辑前的会话快照。"""
     if record.history_seq <= 1:
         raise CannotUndo
     entry = await _entry(session, record, record.history_seq)
@@ -362,6 +365,7 @@ async def undo(session: AsyncSession, record: EditSession) -> EditSession:
 
 
 async def redo(session: AsyncSession, record: EditSession) -> EditSession:
+    """恢复下一条编辑历史保存的会话快照。"""
     entry = await _entry(session, record, record.history_seq + 1)
     if entry is None or "document" not in entry.result:
         raise CannotRedo

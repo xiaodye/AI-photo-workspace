@@ -38,6 +38,7 @@ async def submit(
     params: dict,
     session_id: uuid.UUID | None = None,
 ) -> ToolRun:
+    """校验工具参数并创建、调度执行任务。"""
     spec = spec_of(tool)
     if spec.session_required and session_id is None:
         raise InvalidParams("此工具需要在编辑会话中使用")
@@ -73,6 +74,7 @@ async def execute(session: AsyncSession, run: ToolRun) -> None:
 
 
 async def _record(session: AsyncSession, run: ToolRun, result: dict) -> None:
+    """将工具结果写入会话文档、编辑历史和图片墙。"""
     if run.session_id is None:
         return
 

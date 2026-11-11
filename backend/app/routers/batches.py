@@ -19,6 +19,7 @@ router = APIRouter(prefix="/batches", tags=["batches"])
 
 @router.post("", status_code=status.HTTP_202_ACCEPTED)
 async def create_batch(payload: BatchIn, user: CurrentUser, session: SessionDep) -> RunOut:
+    """提交批量图片处理任务。"""
     try:
         await batch.require_assets(session, user.id, payload.asset_ids)
     except UnknownBatchAsset as exc:
@@ -36,12 +37,14 @@ async def list_batches(
     session: SessionDep,
     limit: Annotated[int, Query(ge=1, le=50)] = 20,
 ) -> list[BatchOut]:
+    """返回当前用户的批处理任务列表。"""
     records = await batch.list_for_user(session, user.id, limit)
     return [await batch.detail(session, record) for record in records]
 
 
 @router.get("/{run_id}")
 async def get_batch(run_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> BatchOut:
+    """返回批处理任务及逐项处理结果。"""
     try:
         run = await runs.get(session, run_id, user.id)
     except RunNotFound as exc:
@@ -53,6 +56,7 @@ async def get_batch(run_id: uuid.UUID, user: CurrentUser, session: SessionDep) -
 
 @router.get("/{run_id}/export")
 async def export_batch(run_id: uuid.UUID, user: CurrentUser, session: SessionDep) -> Response:
+    """打包并下载批处理成品。"""
     try:
         run = await runs.get(session, run_id, user.id)
     except RunNotFound as exc:
