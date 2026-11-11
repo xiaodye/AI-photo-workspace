@@ -76,6 +76,13 @@
 }
 
 @layer components {
+  .editor-canvas-grid {
+    background-image:
+      linear-gradient(to right, var(--page-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--page-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
   .editor-tool-row .app-button,
   .editor-tool-row a {
     height: 2rem;

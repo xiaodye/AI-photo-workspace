@@ -13,6 +13,7 @@ import {
 } from 'react-konva'
 
 import type { Layer, LayerDocument } from '@/api/sessions'
+import compareIconUrl from '@/assets/chevrons-left-right.svg'
 import { SelectionOverlay } from '@/components/editor/SelectionOverlay'
 import { canvasStamp, useHeldCanvas, type HeldCanvas } from '@/hooks/useHeldCanvas'
 import { usePointPreview } from '@/hooks/usePointPreview'
@@ -170,7 +171,7 @@ export default function CanvasStage({
   return (
     <div
       ref={containerRef}
-      className={`bg-canvas relative h-full w-full overflow-hidden ${
+      className={`bg-canvas editor-canvas-grid relative h-full w-full overflow-hidden ${
         selecting || cropOpen ? 'cursor-crosshair' : 'cursor-grab active:cursor-grabbing'
       }`}
     >
@@ -253,7 +254,6 @@ export default function CanvasStage({
             layerPreview={layerPreview}
             interactive={interactive}
             stageDraggable={stageDraggable}
-            viewScale={scale}
             selectedId={selectedLayerId}
             editingId={editingId}
             onSelect={selectLayer}
@@ -439,7 +439,6 @@ function DocumentLayer({
   clip,
   interactive = false,
   stageDraggable = false,
-  viewScale = 1,
   selectedId = null,
   editingId = null,
   onSelect,
@@ -455,7 +454,6 @@ function DocumentLayer({
   clip?: { x: number; y: number; width: number; height: number }
   interactive?: boolean
   stageDraggable?: boolean
-  viewScale?: number
   selectedId?: string | null
   editingId?: string | null
   onSelect?: (id: string) => void
@@ -535,7 +533,6 @@ function DocumentLayer({
         <LayerScaler
           node={selectedNode}
           layer={selected}
-          viewScale={viewScale}
           onScale={(layerId, scale, x, y) => {
             waitingStamp.current = stamp
             setPinned({ id: layerId, scale, x, y })
@@ -607,7 +604,7 @@ function TextLayer({
         onEdit?.(layer.id)
       }}
       stroke={selected && interactive && !editing ? '#64866c' : undefined}
-      strokeWidth={selected && interactive && !editing ? 2 : 0}
+      strokeWidth={selected && interactive && !editing ? 1 : 0}
       strokeScaleEnabled={false}
     />
   )
@@ -750,7 +747,7 @@ function ImageLayer({
       filters={filters}
       {...drag.handlers}
       stroke={selected && interactive ? '#64866c' : undefined}
-      strokeWidth={selected && interactive ? 2 : 0}
+      strokeWidth={selected && interactive ? 1 : 0}
       strokeScaleEnabled={false}
     />
   )
@@ -977,18 +974,15 @@ function useLayerInteract(
 function LayerScaler({
   node,
   layer,
-  viewScale,
   onScale,
   onHoldStage,
 }: {
   node: Konva.Node
   layer: Layer
-  viewScale: number
   onScale?: (layerId: string, scale: number, x: number, y: number) => void
   onHoldStage?: (held: boolean) => void
 }) {
   const ref = useRef<Konva.Transformer>(null)
-  const invert = 1 / viewScale
 
   useEffect(() => {
     const transformer = ref.current
@@ -1008,10 +1002,11 @@ function LayerScaler({
       keepRatio
       enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
       ignoreStroke
-      anchorSize={10 * invert}
-      anchorCornerRadius={3 * invert}
-      anchorStrokeWidth={1.5 * invert}
-      borderStrokeWidth={invert}
+      anchorSize={8}
+      anchorCornerRadius={4}
+      anchorStrokeWidth={1}
+      borderStrokeWidth={1}
+      anchorStyleFunc={(anchor) => anchor.hitStrokeWidth(10)}
       anchorStroke="#44664c"
       borderStroke="#64866c"
       boundBoxFunc={(oldBox, newBox) => {
@@ -1049,6 +1044,7 @@ function CompareDivider({
   scale: number
   onChange: (value: number) => void
 }) {
+  const icon = useCanvasImage(compareIconUrl)
   /**
    * 更新舞台容器的鼠标样式。
    *
@@ -1065,11 +1061,11 @@ function CompareDivider({
       <Line
         points={[split, 0, split, canvas.height]}
         stroke="#ffffff"
-        strokeWidth={2}
+        strokeWidth={1}
         strokeScaleEnabled={false}
         shadowColor="#141a14"
-        shadowBlur={8}
-        shadowOpacity={0.45}
+        shadowBlur={3}
+        shadowOpacity={0.25}
         listening={false}
       />
       <Group
@@ -1078,9 +1074,12 @@ function CompareDivider({
         scaleX={1 / scale}
         scaleY={1 / scale}
         draggable
+        onDragStart={(event) => { event.cancelBubble = true }}
+        onDragEnd={(event) => { event.cancelBubble = true }}
         onMouseEnter={(event) => cursor(event.target, 'ew-resize')}
         onMouseLeave={(event) => cursor(event.target, '')}
         onDragMove={(event) => {
+          event.cancelBubble = true
           const node = event.target
           // 直接用画布坐标系下的指针位置，手柄自身的反向缩放不参与换算
           const pointer = node.getStage()?.getRelativePointerPosition()
@@ -1091,14 +1090,18 @@ function CompareDivider({
         }}
       >
         <Circle
-          radius={15}
+          radius={14}
           fill="#ffffff"
+          stroke="#d7dfd5"
+          strokeWidth={1}
+          hitStrokeWidth={18}
           shadowColor="#141a14"
-          shadowBlur={10}
-          shadowOpacity={0.3}
+          shadowBlur={4}
+          shadowOpacity={0.18}
         />
-        <Line points={[-7, -4, -11, 0, -7, 4]} stroke="#6f746f" strokeWidth={1.6} lineCap="round" />
-        <Line points={[7, -4, 11, 0, 7, 4]} stroke="#6f746f" strokeWidth={1.6} lineCap="round" />
+        {icon && (
+          <KonvaImage image={icon.element} x={-9} y={-9} width={18} height={18} listening={false} />
+        )}
       </Group>
     </KonvaLayer>
   )
