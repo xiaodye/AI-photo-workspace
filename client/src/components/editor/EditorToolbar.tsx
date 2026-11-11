@@ -1,3 +1,28 @@
+import {
+  Brush,
+  Check,
+  Crop,
+  Eraser,
+  Expand,
+  FlipHorizontal2,
+  FlipVertical2,
+  ImagePlus,
+  Layers,
+  Layers2,
+  Maximize,
+  MousePointer2,
+  Redo2,
+  ScanLine,
+  Scissors,
+  SlidersHorizontal,
+  SplitSquareHorizontal,
+  Undo2,
+  Upload,
+  X,
+  ZoomIn,
+  ZoomOut,
+  type LucideIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -17,6 +42,15 @@ const CROP_RATIOS: { value: CropRatio; label: string }[] = [
   { value: '9:16', label: '9:16' },
   { value: '16:9', label: '16:9' },
 ]
+
+function ToolLabel({ icon: Icon, children }: { icon: LucideIcon; children: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+      <Icon size={14} strokeWidth={1.7} className="shrink-0" aria-hidden />
+      {children}
+    </span>
+  )
+}
 
 export default function EditorToolbar({
   session,
@@ -63,14 +97,16 @@ export default function EditorToolbar({
   }
 
   return (
-    <header className="border-line bg-paper scrollbar-slim flex h-14 shrink-0 items-center gap-2 overflow-x-auto border-b px-3">
-      <TitleField value={session.title} onCommit={onRename} />
+    <header className="border-line bg-paper min-w-0 shrink-0 border-b">
+      <div className="border-line flex h-14 items-center border-b px-3">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-center">
+          <TitleField value={session.title} onCommit={onRename} />
+        </div>
+      </div>
 
-      <span className="text-faint hidden shrink-0 text-xs tabular-nums sm:block">
-        {session.document.width} × {session.document.height}
-      </span>
-
-      <div className="ml-1 flex shrink-0 items-center gap-1">
+      <div className="scrollbar-slim overflow-x-auto">
+      <div className="editor-tool-row grid grid-cols-[minmax(8rem,1fr)_max-content] items-start">
+      <div className="flex min-w-0 flex-wrap items-center gap-x-0.5 gap-y-1 px-2 py-1.5">
         {ui.selectMode ? (
           <>
             <Button
@@ -78,14 +114,14 @@ export default function EditorToolbar({
               title="点击物体生成选区"
               onClick={() => ui.setSelectMode(ui.selectMode === 'point' ? null : 'point')}
             >
-              点选
+              <ToolLabel icon={MousePointer2}>点选</ToolLabel>
             </Button>
             <Button
               active={ui.selectMode === 'brush'}
               title="涂抹出选区"
               onClick={() => ui.setSelectMode(ui.selectMode === 'brush' ? null : 'brush')}
             >
-              笔刷
+              <ToolLabel icon={Brush}>笔刷</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy || picking.busy || !picking.selection}
@@ -99,7 +135,7 @@ export default function EditorToolbar({
                 })
               }
             >
-              消除
+              <ToolLabel icon={Eraser}>消除</ToolLabel>
             </Button>
             <Button
               disabled={!picking.selection}
@@ -107,7 +143,7 @@ export default function EditorToolbar({
               title={picking.selection ? '按描述替换选区' : '先点选或涂抹'}
               onClick={() => ui.setPanel(ui.panel === 'replace' ? null : 'replace')}
             >
-              替换
+              <ToolLabel icon={ImagePlus}>替换</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy || picking.busy || !picking.selection}
@@ -120,17 +156,17 @@ export default function EditorToolbar({
                 })
               }
             >
-              成层
+              <ToolLabel icon={Layers2}>成层</ToolLabel>
             </Button>
             <Button
               disabled={!picking.selection || picking.busy}
               title="清除当前选区"
               onClick={picking.clear}
             >
-              清除
+              <ToolLabel icon={X}>清除</ToolLabel>
             </Button>
             <Button title="退出选择 Esc" onClick={() => ui.setSelectMode(null)}>
-              完成
+              <ToolLabel icon={Check}>完成</ToolLabel>
             </Button>
           </>
         ) : ui.cropOpen ? (
@@ -146,10 +182,10 @@ export default function EditorToolbar({
               </Button>
             ))}
             <Button title="按当前框裁剪画布，可撤销" onClick={confirmCrop}>
-              确定
+              <ToolLabel icon={Check}>确定</ToolLabel>
             </Button>
             <Button title="退出裁剪 Esc" onClick={ui.closeCrop}>
-              取消
+              <ToolLabel icon={X}>取消</ToolLabel>
             </Button>
           </>
         ) : (
@@ -160,7 +196,7 @@ export default function EditorToolbar({
               title="按比例裁剪画布"
               onClick={() => ui.openCrop(session.document)}
             >
-              裁剪
+              <ToolLabel icon={Crop}>裁剪</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -173,7 +209,7 @@ export default function EditorToolbar({
                 })
               }
             >
-              水平翻转
+              <ToolLabel icon={FlipHorizontal2}>水平翻转</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -186,7 +222,7 @@ export default function EditorToolbar({
                 })
               }
             >
-              垂直翻转
+              <ToolLabel icon={FlipVertical2}>垂直翻转</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -194,7 +230,7 @@ export default function EditorToolbar({
               title="抠出主体，背景变透明"
               onClick={() => tools.invoke('remove_background', { layer_id: ui.selectedLayerId })}
             >
-              去背景
+              <ToolLabel icon={Scissors}>去背景</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -202,7 +238,7 @@ export default function EditorToolbar({
               title="按描述替换背景"
               onClick={() => ui.setPanel(ui.panel === 'background' ? null : 'background')}
             >
-              换背景
+              <ToolLabel icon={ImagePlus}>换背景</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -210,7 +246,7 @@ export default function EditorToolbar({
               title="扩展画布到新比例"
               onClick={() => ui.setPanel(ui.panel === 'expand' ? null : 'expand')}
             >
-              扩图
+              <ToolLabel icon={Expand}>扩图</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -222,14 +258,14 @@ export default function EditorToolbar({
               }
               onClick={() => tools.invoke('upscale_image', { scale: 2 })}
             >
-              超分
+              <ToolLabel icon={ScanLine}>超分</ToolLabel>
             </Button>
             <Button
               active={ui.panel === 'adjust'}
               title="调整亮度、对比度和色彩"
               onClick={() => ui.setPanel(ui.panel === 'adjust' ? null : 'adjust')}
             >
-              调色
+              <ToolLabel icon={SlidersHorizontal}>调色</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
@@ -237,27 +273,27 @@ export default function EditorToolbar({
               title="拆成背景和主体，文字需在图层面板勾选，可撤销"
               onClick={() => tools.invoke('split_layers', { include_text: ui.splitIncludeText })}
             >
-              拆层
+              <ToolLabel icon={Layers2}>拆层</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
               title="点选物体建立选区"
               onClick={() => ui.setSelectMode('point')}
             >
-              点选
+              <ToolLabel icon={MousePointer2}>点选</ToolLabel>
             </Button>
             <Button
               disabled={tools.busy}
               title="涂抹建立选区"
               onClick={() => ui.setSelectMode('brush')}
             >
-              笔刷
+              <ToolLabel icon={Brush}>笔刷</ToolLabel>
             </Button>
           </>
         )}
       </div>
 
-      <div className="ml-auto flex shrink-0 items-center gap-1">
+      <div className="border-line flex flex-nowrap items-start justify-end gap-0.5 self-stretch border-l px-2 py-1.5 whitespace-nowrap [&>*]:shrink-0">
         <Button
           disabled={tools.busy || picking.busy || !(picking.canUndo || session.can_undo)}
           title={
@@ -269,7 +305,7 @@ export default function EditorToolbar({
           }
           onClick={() => (picking.canUndo ? picking.undo() : tools.undo())}
         >
-          撤销
+          <ToolLabel icon={Undo2}>撤销</ToolLabel>
         </Button>
         <Button
           disabled={tools.busy || picking.busy || !(picking.canRedo || session.can_redo)}
@@ -282,7 +318,7 @@ export default function EditorToolbar({
           }
           onClick={() => (picking.canRedo ? picking.redo() : tools.redo())}
         >
-          重做
+          <ToolLabel icon={Redo2}>重做</ToolLabel>
         </Button>
         <Button
           active={ui.compareOpen}
@@ -290,17 +326,18 @@ export default function EditorToolbar({
           title={session.previous_document ? '与上一版对比' : '还没有上一版'}
           onClick={() => ui.setCompareOpen(!ui.compareOpen)}
         >
-          对比
+          <ToolLabel icon={SplitSquareHorizontal}>对比</ToolLabel>
         </Button>
 
-        <div className="border-line rounded-control ml-1 flex items-center gap-0.5 border p-0.5">
+        <div className="editor-zoom-controls border-line rounded-control mx-1 flex h-8 shrink-0 flex-nowrap items-center gap-0.5 border px-0.5">
           <Button
             variant="icon"
             size="sm"
             title="缩小 -"
             onClick={() => stepZoom(1 / ZOOM_STEP)}
           >
-            －
+            <ZoomOut size={14} strokeWidth={1.7} aria-hidden />
+            <span className="sr-only">缩小</span>
           </Button>
           <Button
             size="sm"
@@ -311,27 +348,30 @@ export default function EditorToolbar({
             {Math.round(scale * 100)}%
           </Button>
           <Button variant="icon" size="sm" title="放大 +" onClick={() => stepZoom(ZOOM_STEP)}>
-            ＋
+            <ZoomIn size={14} strokeWidth={1.7} aria-hidden />
+            <span className="sr-only">放大</span>
           </Button>
           <Button
             size="sm"
             title="适应窗口 · 按 0，画布内双击同样生效"
             onClick={() => fit(session.document)}
           >
-            适应
+            <ToolLabel icon={Maximize}>适应</ToolLabel>
           </Button>
         </div>
 
         <Link to={`/marketing/${session.id}`} title="导出营销图和投放尺寸" className={buttonClass()}>
-          导出
+          <ToolLabel icon={Upload}>导出</ToolLabel>
         </Link>
         <Button
           active={ui.panel === 'layers'}
           title="图层、变换和编辑记录"
           onClick={() => ui.setPanel(ui.panel === 'layers' ? null : 'layers')}
         >
-          图层
+          <ToolLabel icon={Layers}>图层</ToolLabel>
         </Button>
+      </div>
+      </div>
       </div>
     </header>
   )
@@ -359,7 +399,7 @@ function TitleField({ value, onCommit }: { value: string; onCommit: (title: stri
         if (event.key === 'Escape') setDraft(null)
       }}
       aria-label="会话标题"
-      className="text-ink hover:bg-soft focus:bg-soft rounded-chip w-28 shrink-0 px-2 py-1 text-sm font-medium transition-colors duration-150 outline-none sm:w-40"
+      className="text-ink hover:bg-soft focus:bg-soft rounded-chip min-w-0 flex-1 px-3 py-1.5 text-center text-sm font-medium transition-colors duration-150 outline-none"
     />
   )
 }

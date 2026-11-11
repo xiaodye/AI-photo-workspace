@@ -76,6 +76,19 @@
 }
 
 @layer components {
+  .editor-tool-row .app-button,
+  .editor-tool-row a {
+    height: 2rem;
+    padding-inline: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .editor-tool-row .editor-zoom-controls .app-button {
+    height: 1.75rem;
+  }
+
   /* 保留工具栏原有的紧凑尺寸。 */
   .app-button {
     height: auto;

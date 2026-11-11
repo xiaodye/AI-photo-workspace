@@ -16,7 +16,7 @@ export default function SessionSidebar({ activeId }: { activeId: string }) {
 
   return (
     <aside className="border-line bg-paper flex w-72 shrink-0 flex-col border-r">
-      <div className="border-line flex items-center gap-2 border-b p-3">
+      <div className="border-line flex h-14 shrink-0 items-center gap-2 border-b px-3">
         <Link
           to="/create"
           className={`${buttonClass({ variant: 'outline' })} flex-1 py-2 text-center text-sm`}

@@ -161,7 +161,7 @@ export const useEditorUi = create<EditorUi>((set) => ({
   cropRect: null,
   compareOpen: false,
   compareAt: 0.5,
-  panel: null,
+  panel: 'layers',
   selectMode: null,
   selection: null,
   splitIncludeText: false,
