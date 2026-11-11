@@ -15,6 +15,7 @@
     "@heroui/styles": "3.2.7",
     "@tanstack/react-query": "^5.102.4",
     "konva": "^10.3.1",
+    "lucide-react": "^1.71.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-konva": "^19.2.5",

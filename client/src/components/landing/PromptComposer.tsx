@@ -79,7 +79,7 @@ export default function PromptComposer({
           <span className="text-faint hidden text-xs sm:block">Enter 发送 · Shift + Enter 换行</span>
           <Button
             type="submit"
-            className="app-button bg-ink hover:bg-dark rounded-control flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white transition-colors"
+            className="app-button bg-action hover:bg-action-hover rounded-control flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-action-foreground transition-colors"
           >
             {submitLabel}
             <SubmitIcon />

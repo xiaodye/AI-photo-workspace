@@ -78,7 +78,7 @@ export default function GenerateForm({
         <Button
           type="submit"
           isDisabled={!canSubmit}
-          className="app-button bg-ink hover:bg-dark rounded-control ml-auto px-4 py-2 text-sm font-medium text-white transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+          className="app-button bg-action hover:bg-action-hover rounded-control ml-auto px-4 py-2 text-sm font-medium text-action-foreground transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
         >
           {pending ? '提交中…' : '生成'}
         </Button>
@@ -124,7 +124,7 @@ function Segmented<T extends string | number>({
           onClick={() => onChange(option.value)}
           aria-pressed={option.value === value}
           className={`app-button rounded-[6px] px-2 py-1 text-xs font-medium transition-all duration-150 active:scale-95 ${
-            option.value === value ? 'bg-ink text-white' : 'text-muted hover:bg-soft hover:text-ink'
+            option.value === value ? 'bg-action text-action-foreground' : 'text-muted hover:bg-soft hover:text-ink'
           }`}
         >
           {option.label}

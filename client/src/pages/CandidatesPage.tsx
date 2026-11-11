@@ -37,7 +37,7 @@ export default function CandidatesPage() {
       <Centered title="生成失败" hint={error ?? '未知原因'}>
         <Link
           to="/create"
-          className="bg-ink hover:bg-dark rounded-control mt-5 px-4 py-2 text-sm font-medium text-white"
+          className="bg-action hover:bg-action-hover rounded-control mt-5 px-4 py-2 text-sm font-medium text-action-foreground"
         >
           返回重试
         </Link>
@@ -62,7 +62,7 @@ export default function CandidatesPage() {
           type="button"
           disabled={!picked || createSession.isPending}
           onClick={adopt}
-          className="bg-ink hover:bg-dark rounded-control shrink-0 px-4 py-2 text-sm font-medium text-white transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+          className="bg-action hover:bg-action-hover rounded-control shrink-0 px-4 py-2 text-sm font-medium text-action-foreground transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
         >
           {createSession.isPending ? '打开中…' : picked ? '进入编辑' : '先点选一张'}
         </button>

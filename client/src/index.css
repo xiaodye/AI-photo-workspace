@@ -4,16 +4,21 @@
 @import '@heroui/styles/components/input.css' layer(components);
 @import '@heroui/styles/components/textarea.css' layer(components);
 @import '@heroui/styles/components/progress-bar.css' layer(components);
+@import '@heroui/styles/components/popover.css' layer(components);
 @import '@heroui/styles/utilities';
 
 :root {
+  --color-action: #181818;
+  --color-action-hover: #262626;
+  --color-action-foreground: #fff;
+  --color-scrim: #181818;
   --background: var(--color-canvas);
   --foreground: var(--color-ink);
   --surface: var(--color-paper);
   --surface-foreground: var(--color-ink);
   --overlay: var(--color-paper);
   --overlay-foreground: var(--color-ink);
-  --muted: #6f746f;
+  --muted: var(--color-muted);
   --default: var(--color-soft);
   --default-foreground: var(--color-ink);
   --accent: var(--color-brand-strong);
@@ -24,8 +29,8 @@
   --border: var(--color-line);
   --separator: var(--color-line);
   --focus: var(--color-brand);
-  --success: #3b8a61;
-  --danger: #d95656;
+  --success: var(--color-success);
+  --danger: var(--color-danger);
   --field-background: var(--color-paper);
   --field-foreground: var(--color-ink);
   --field-placeholder: var(--color-faint);
@@ -37,6 +42,36 @@
   --field-border-width: 1px;
   --field-radius: var(--radius-control);
   --field-shadow: none;
+  --page-glow: rgb(255 255 255 / 0.75);
+  --page-glow-accent: rgb(228 228 228 / 0.3);
+  --page-grid: rgb(24 24 24 / 0.05);
+}
+
+:root[data-theme='dark'] {
+  --color-ink: #ededed;
+  --color-muted: #ababab;
+  --color-faint: #909090;
+  --color-line: #363636;
+  --color-line-strong: #505050;
+  --color-paper: #202020;
+  --color-canvas: #171717;
+  --color-soft: #2a2a2a;
+  --color-dark: #111111;
+  --color-brand: #87b8cc;
+  --color-brand-strong: #a0d0e2;
+  --color-brand-soft: #253d46;
+  --color-danger: #f28a8a;
+  --color-success: #7acb9c;
+  --color-action: #ededed;
+  --color-action-hover: #ffffff;
+  --color-action-foreground: #181818;
+  --accent-foreground: #182a32;
+  --shadow-card: 0 16px 42px rgb(0 0 0 / 0.22);
+  --shadow-control: 0 8px 22px rgb(0 0 0 / 0.2);
+  --shadow-panel: 0 28px 72px -26px rgb(0 0 0 / 0.6);
+  --page-glow: rgb(40 40 40 / 0.7);
+  --page-glow-accent: rgb(32 32 32 / 0.2);
+  --page-grid: rgb(237 237 237 / 0.04);
 }
 
 @layer components {
@@ -76,15 +111,15 @@
   --font-sans:
     system-ui, -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 
-  --color-ink: #171917;
-  --color-muted: #6f746f;
-  --color-faint: #9aa09a;
-  --color-line: #e5e8e4;
-  --color-line-strong: #d7dbd6;
+  --color-ink: #181818;
+  --color-muted: #707070;
+  --color-faint: #9b9b9b;
+  --color-line: #e5e5e5;
+  --color-line-strong: #d7d7d7;
   --color-paper: #ffffff;
-  --color-canvas: #eff1ee;
-  --color-soft: #f6f7f5;
-  --color-dark: #1e211e;
+  --color-canvas: #f3f3f3;
+  --color-soft: #f7f7f7;
+  --color-dark: #262626;
 
   --color-brand: #5f98ad;
   --color-brand-strong: #427f95;
@@ -93,6 +128,10 @@
 
   --color-danger: #d95656;
   --color-success: #3b8a61;
+  --color-action: #181818;
+  --color-action-hover: #262626;
+  --color-action-foreground: #fff;
+  --color-scrim: #181818;
 
   --radius-chip: 8px;
   --radius-card: 18px;
@@ -263,15 +302,15 @@
 /* 首屏顶部的光晕，为居中的输入面板提供视觉重心 */
 @utility bg-glow {
   background:
-    radial-gradient(62% 52% at 50% -6%, rgb(232 242 245 / 0.95), transparent 72%),
-    radial-gradient(34% 34% at 84% 6%, rgb(217 255 110 / 0.28), transparent 70%);
+    radial-gradient(62% 52% at 50% -6%, var(--page-glow), transparent 72%),
+    radial-gradient(34% 34% at 84% 6%, var(--page-glow-accent), transparent 70%);
 }
 
 /* 网格底纹，向下淡出以免干扰正文 */
 @utility bg-grid {
   background-image:
-    linear-gradient(to right, rgb(23 25 23 / 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(23 25 23 / 0.05) 1px, transparent 1px);
+    linear-gradient(to right, var(--page-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--page-grid) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(68% 58% at 50% 0%, #000 10%, transparent 100%);
 }

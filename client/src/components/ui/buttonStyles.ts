@@ -16,14 +16,14 @@ const ICON_SHAPE: Record<ButtonSize, string> = {
 
 const IDLE: Record<ButtonVariant, string> = {
   ghost: 'text-muted hover:bg-soft hover:text-ink',
-  solid: 'bg-ink hover:bg-dark text-white',
+  solid: 'bg-action hover:bg-action-hover text-action-foreground',
   outline: 'border-line text-muted hover:bg-soft hover:text-ink border',
   icon: 'text-muted hover:bg-soft hover:text-ink',
 }
 
 const ON: Record<ButtonVariant, string> = {
   ghost: 'bg-brand-soft text-brand-strong',
-  solid: 'bg-dark text-white',
+  solid: 'bg-action-hover text-action-foreground',
   outline: 'border-brand bg-brand-soft text-brand-strong border',
   icon: 'bg-brand-soft text-brand-strong',
 }

@@ -21,7 +21,7 @@ export function CandidatesPreview() {
             index === 1 ? 'ring-brand ring-2' : 'border-line border'
           }`}
         >
-          <span className="bg-ink/12 h-5 w-4 rounded-[3px]" />
+          <span className="bg-scrim/12 h-5 w-4 rounded-[3px]" />
           {index === 1 && (
             <span className="bg-brand absolute top-1 right-1 grid size-3.5 place-items-center rounded-full">
               <svg viewBox="0 0 24 24" fill="none" className="size-2">
@@ -43,12 +43,12 @@ export function SelectionPreview() {
       aria-hidden
     >
       <div className="border-brand absolute top-[18%] left-[22%] h-[54%] w-[38%] rounded-[6px] border-2 border-dashed">
-        <span className="bg-ink/12 absolute inset-1.5 rounded-[4px]" />
+        <span className="bg-scrim/12 absolute inset-1.5 rounded-[4px]" />
         {['-top-1 -left-1', '-top-1 -right-1', '-bottom-1 -left-1', '-bottom-1 -right-1'].map((pos) => (
           <span key={pos} className={`bg-paper border-brand absolute size-2 rounded-full border-2 ${pos}`} />
         ))}
       </div>
-      <p className="bg-ink/90 absolute bottom-2.5 left-2.5 rounded-full px-2.5 py-1 text-[10px] text-white">
+      <p className="bg-scrim/90 absolute bottom-2.5 left-2.5 rounded-full px-2.5 py-1 text-[10px] text-white">
         把背景换成米色亚麻
       </p>
     </div>
@@ -97,7 +97,7 @@ export function ExportsPreview() {
           <div
             className={`border-line grid place-items-center rounded-[9px] border bg-[linear-gradient(150deg,#e4eef1,#f4f6f3)] ${ratio.frame}`}
           >
-            <span className="bg-ink/15 h-2/5 w-1/3 rounded-[3px]" />
+            <span className="bg-scrim/15 h-2/5 w-1/3 rounded-[3px]" />
           </div>
           <span className="text-faint text-[10px]">{ratio.label}</span>
         </div>

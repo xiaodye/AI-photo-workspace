@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 
 import BrandMark from '@/components/BrandMark'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { errorMessage, useAuthActions, useCurrentUser } from '@/hooks/useAuth'
 
 type Mode = 'login' | 'register'
@@ -67,6 +68,7 @@ export default function AuthPage() {
 
   return (
     <div className="relative isolate flex min-h-screen items-center justify-center px-6 py-12">
+      <div className="absolute top-5 right-5 z-10"><ThemeSwitcher /></div>
       <div className="bg-glow absolute inset-x-0 top-0 h-[420px]" aria-hidden />
 
       <div className="relative w-full max-w-sm">
@@ -105,7 +107,7 @@ export default function AuthPage() {
             <Button
               type="submit"
               isDisabled={action.isPending}
-              className="app-button bg-ink hover:bg-dark rounded-control w-full py-2.5 text-sm font-medium text-white transition-colors disabled:opacity-50"
+              className="app-button bg-action hover:bg-action-hover rounded-control w-full py-2.5 text-sm font-medium text-action-foreground transition-colors disabled:opacity-50"
             >
               {action.isPending ? '处理中…' : copy.submit}
             </Button>

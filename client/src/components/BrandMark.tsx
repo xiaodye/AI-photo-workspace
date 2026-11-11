@@ -18,7 +18,7 @@ export default function BrandMark({
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <span
-        className={`bg-ink text-accent grid shrink-0 place-items-center ${GLYPH_SIZE[size]}`}
+        className={`bg-scrim text-accent grid shrink-0 place-items-center ${GLYPH_SIZE[size]}`}
         aria-hidden
       >
         <svg viewBox="0 0 24 24" fill="none" className="size-[62%]">
