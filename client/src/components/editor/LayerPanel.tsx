@@ -206,15 +206,35 @@ export default function LayerPanel({
         {history.length === 0 ? (
           <p className="text-faint text-xs">暂无记录</p>
         ) : (
-          <ol className="space-y-1.5">
-            {history.map((entry) => (
-              <li key={entry.seq} className="flex items-baseline justify-between gap-2 text-xs">
-                <span className="text-ink">{ACTION_LABELS[entry.action] ?? entry.action}</span>
-                <span className="text-faint shrink-0 tabular-nums">
-                  {formatDateTime(entry.created_at)}
-                </span>
-              </li>
-            ))}
+          <ol className="space-y-0.5">
+            {history.map((entry) => {
+              const active = entry.seq === session.history_seq
+              const undone = entry.seq > session.history_seq
+
+              return (
+                <li
+                  key={entry.seq}
+                  aria-current={active ? 'step' : undefined}
+                  className={`rounded-control flex items-center gap-1.5 border px-1.5 py-1 text-xs transition-colors ${
+                    active ? 'border-brand bg-brand-soft' : 'border-transparent'
+                  } ${undone ? 'opacity-50' : ''}`}
+                >
+                  <span
+                    title={ACTION_LABELS[entry.action] ?? entry.action}
+                    className={`min-w-0 flex-1 truncate ${active ? 'text-brand-strong font-medium' : 'text-ink'}`}
+                  >
+                    {ACTION_LABELS[entry.action] ?? entry.action}
+                  </span>
+                  {active && (
+                    <span className="text-brand-strong shrink-0 text-[10px] font-medium">当前</span>
+                  )}
+                  {undone && <span className="text-faint shrink-0 text-[10px]">已撤销</span>}
+                  <span className="text-faint shrink-0 whitespace-nowrap text-[10px] tabular-nums">
+                    {formatDateTime(entry.created_at)}
+                  </span>
+                </li>
+              )
+            })}
           </ol>
         )}
       </Section>
