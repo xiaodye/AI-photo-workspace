@@ -22,12 +22,12 @@ export default function AccountMenu({
         type="button"
         variant="ghost"
         aria-label="账户菜单"
-        className="app-button text-muted hover:bg-soft hover:text-ink flex w-full justify-start gap-3 rounded-[12px] px-3 py-2.5 text-sm"
+        className="app-button text-muted hover:bg-soft hover:text-ink flex h-11 w-11 min-w-0 justify-start gap-3 rounded-[12px] px-3 py-0 text-sm group-data-[nav-open=true]:w-full group-data-[account-open=true]:w-full"
       >
         <span className="bg-soft text-ink grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-semibold">
           {username?.slice(0, 1).toUpperCase() ?? '?'}
         </span>
-        <span className="truncate opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
+        <span className="hidden truncate group-data-[nav-open=true]:block group-data-[account-open=true]:block">
           {username ?? '账户设置'}
         </span>
       </Button>

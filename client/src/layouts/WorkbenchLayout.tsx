@@ -1,4 +1,4 @@
-import { Download, Images, Pencil, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Images, Pencil, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
@@ -14,11 +14,12 @@ const NAV_ITEMS = [
   { to: '/batch', label: '批量', icon: Images },
 ]
 
-/** 工作台外壳：左侧导航默认收起为图标，悬停展开文字。 */
+/** 工作台外壳：左侧导航通过按钮展开或收起。 */
 export default function WorkbenchLayout() {
   const navigate = useNavigate()
   const { user } = useCurrentUser()
   const { logout } = useAuthActions()
+  const [navOpen, setNavOpen] = useState(false)
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
 
   /**
@@ -32,11 +33,12 @@ export default function WorkbenchLayout() {
       <nav className="relative z-30 w-16 shrink-0" aria-label="工作台">
         <div
           data-account-open={accountMenuOpen}
-          className="group border-line bg-paper absolute inset-y-0 left-0 flex w-16 flex-col overflow-hidden border-r py-4 transition-[width,box-shadow] duration-200 hover:w-52 hover:shadow-panel data-[account-open=true]:w-52 data-[account-open=true]:shadow-panel data-[account-open=true]:transition-none"
+          data-nav-open={navOpen}
+          className="group border-line bg-paper absolute inset-y-0 left-0 flex w-16 flex-col overflow-hidden border-r py-4 transition-[width,box-shadow] duration-200 data-[nav-open=true]:w-52 data-[nav-open=true]:shadow-panel data-[account-open=true]:w-52 data-[account-open=true]:shadow-panel data-[account-open=true]:transition-none"
         >
           <Link to="/" aria-label="返回落地页" title="返回落地页" className="mb-6 block px-5">
             <BrandMark size="sm">
-              <span className="text-ink truncate text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
+              <span className="text-ink truncate text-sm font-semibold opacity-0 transition-opacity group-data-[nav-open=true]:opacity-100 group-data-[account-open=true]:opacity-100">
                 AI 修图智能体
               </span>
             </BrandMark>
@@ -50,7 +52,7 @@ export default function WorkbenchLayout() {
                   title={item.label}
                   aria-label={item.label}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm transition-colors ${
+                    `flex h-11 w-11 items-center gap-3 rounded-[12px] px-3 text-sm transition-colors group-data-[nav-open=true]:w-full group-data-[account-open=true]:w-full ${
                       isActive
                         ? 'bg-brand-soft text-brand-strong font-medium'
                         : 'text-muted hover:bg-soft hover:text-ink'
@@ -58,7 +60,7 @@ export default function WorkbenchLayout() {
                   }
                 >
                   <item.icon size={20} strokeWidth={1.7} className="shrink-0" aria-hidden />
-                  <span className="truncate opacity-0 transition-opacity group-hover:opacity-100 group-data-[account-open=true]:opacity-100">
+                  <span className="hidden truncate group-data-[nav-open=true]:block group-data-[account-open=true]:block">
                     {item.label}
                   </span>
                 </NavLink>
@@ -66,7 +68,27 @@ export default function WorkbenchLayout() {
             ))}
           </ul>
 
-          <div className="border-line mt-2 border-t px-2 pt-3">
+          <div className="border-line mt-2 space-y-1 border-t px-2 pt-3">
+            <button
+              type="button"
+              aria-label={navOpen || accountMenuOpen ? '收起侧栏' : '展开侧栏'}
+              aria-expanded={navOpen || accountMenuOpen}
+              title={navOpen || accountMenuOpen ? '收起侧栏' : '展开侧栏'}
+              onClick={() => {
+                setNavOpen(!(navOpen || accountMenuOpen))
+                setAccountMenuOpen(false)
+              }}
+              className="text-muted hover:bg-soft hover:text-ink flex h-11 w-11 shrink-0 items-center gap-3 rounded-[12px] px-3 text-sm transition-colors group-data-[nav-open=true]:w-full group-data-[account-open=true]:w-full"
+            >
+              {navOpen || accountMenuOpen ? (
+                <ChevronLeft size={20} strokeWidth={1.7} className="shrink-0" aria-hidden />
+              ) : (
+                <ChevronRight size={20} strokeWidth={1.7} className="shrink-0" aria-hidden />
+              )}
+              <span className="hidden truncate group-data-[nav-open=true]:block group-data-[account-open=true]:block">
+                收起侧栏
+              </span>
+            </button>
             <AccountMenu
               username={user?.username}
               onSignOut={signOut}
