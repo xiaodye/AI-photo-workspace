@@ -4,7 +4,7 @@
 
 ## 项目结构
 
-- `client/`：React、TypeScript、Vite、Konva 前端，使用。
+- `client/`：React、TypeScript、HeroUI、Vite、Konva 前端，使用。
 - `backend/`：FastAPI 后端，使用 uv；Python 版本要求以 `backend/pyproject.toml` 为准。
 - `backend/app/agent/`：计划生成、校验与编排。
 - `backend/app/tools/`：UI 与 Agent 共用的工具定义；新增工具应沿用现有注册机制。
@@ -80,6 +80,7 @@ git diff --check
 - 默认使用 mock 验证；未经用户授权，不调用收费模型或上传用户素材到第三方服务。
 - 依赖变更需同步对应锁文件；前端使用 `pnpm-lock.yaml`，后端使用 `uv.lock`，不要混用 npm 锁文件。
 - 不因网络错误盲目升级依赖、关闭 TLS 校验，或修改系统代理与全局包源。
+- Follow [DESIGN.md](./DESIGN.md) for all visual and interaction decisions.
 
 ## 目录与部署注意事项
 
